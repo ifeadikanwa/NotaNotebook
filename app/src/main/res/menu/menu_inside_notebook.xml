@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".InsideNotebookActivity">
+
+    <item android:id="@+id/edit_notebook_title"
+        android:title="@string/edit_notebook"
+        android:icon="@drawable/ic_notebook_edit"
+        app:showAsAction="always"/>
+
+</menu>
