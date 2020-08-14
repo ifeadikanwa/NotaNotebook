@@ -17,7 +17,15 @@ import androidx.appcompat.app.AppCompatDialogFragment;
 public class NotebookCustomDialog extends AppCompatDialogFragment {
     NotebookDialogInterface customDialogInterface;
     EditText titleEditText;
+    String oldTitle;
 
+    public NotebookCustomDialog(){
+    }
+
+    //constructor for updating notebook title, old title will be passed in and displayed in edit text
+    public NotebookCustomDialog(String oldTitle){
+        this.oldTitle = oldTitle;
+    }
 
     @NonNull
     @Override
@@ -56,6 +64,9 @@ public class NotebookCustomDialog extends AppCompatDialogFragment {
                 });
 
         titleEditText = view.findViewById(R.id.titleEditText);
+        if(!oldTitle.isEmpty()){
+            titleEditText.setText(oldTitle);
+        }
 
         return builder.create();
     }

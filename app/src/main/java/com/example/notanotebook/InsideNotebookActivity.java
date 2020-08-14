@@ -9,10 +9,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 
-public class InsideNotebookActivity extends AppCompatActivity {
+public class InsideNotebookActivity extends AppCompatActivity implements NotebookCustomDialog.NotebookDialogInterface {
     String notebookId;
     String notebookName;
+
+    FirestoreRepository firestoreRepository = FirestoreRepository.getInstance();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,10 +44,22 @@ public class InsideNotebookActivity extends AppCompatActivity {
         switch(item.getItemId()){
             case R.id.edit_notebook_title:
                 //todo :on click open the custom dialog and UPDATE notebook title only
+                NotebookCustomDialog notebookCustomDialog = new NotebookCustomDialog(notebookName);
+                notebookCustomDialog.show(getSupportFragmentManager(), "Edit Notebook Title");
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
 
+    }
+
+    @Override
+    public void createNotebook(String notebookTitle) {
+        //todo call fireRepository query to update title
+        firestoreRepository.editNotebook(notebookId, notebookTitle);
+        Toast.makeText(this, "Notebook Title Updated", Toast.LENGTH_SHORT).show();
+
+        //todo setTitle(new name)
+        setTitle(notebookTitle);
     }
 }

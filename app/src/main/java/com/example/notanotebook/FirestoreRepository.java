@@ -10,18 +10,12 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class FirestoreRepository {
     public static final String TAG = "FIRESTORE_REPOSITORY";
     private static FirestoreRepository instance;
     public static final String NAME_FIELD = "name";
-    public static final String NOTES_FIELD = "notes";
+    public static final String CONTENTS_FIELD = "contents";
     public static final String DATE_FIELD = "latestUpdateTime";
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     CollectionReference notebookRef = db.collection("Notebooks");
@@ -60,11 +54,7 @@ public class FirestoreRepository {
 
     //todo: update/edit notebook name
     void editNotebook(String documentId, String name){
-        Map<String, Object> changes = new HashMap<>();
-        changes.put(NAME_FIELD, name);
-        changes.put(DATE_FIELD, FieldValue.serverTimestamp());
-
-        notebookRef.document(documentId).update(changes)
+        notebookRef.document(documentId).update(NAME_FIELD, name)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {

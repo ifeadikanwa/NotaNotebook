@@ -9,9 +9,6 @@ import java.util.Map;
 
 @IgnoreExtraProperties
 public class Notebook {
-    /**
-     * @param contents : Hashmap containing notes
-     */
 
     private String name;
     private int contents;
