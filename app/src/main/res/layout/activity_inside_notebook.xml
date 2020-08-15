@@ -11,7 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="2"
-        android:padding="5dp"/>
+        android:padding="5dp"
+        tools:listitem="@layout/notebook_content_item_view"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -37,13 +38,14 @@
 <!--            android:textColor="@android:color/white"/>-->
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/add_note_button"
+            android:id="@+id/add_note"
             android:layout_width="140dp"
             android:layout_height="40dp"
             app:cardBackgroundColor="@color/black"
             android:elevation="10mm"
             app:cardCornerRadius="20dp"
-            android:layout_marginRight="12dp">
+            android:layout_marginRight="12dp"
+            android:onClick="createNote">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -56,12 +58,13 @@
 
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/add_todo_button"
+            android:id="@+id/add_todo"
             android:layout_width="140dp"
             android:layout_height="40dp"
             app:cardBackgroundColor="@color/black"
             app:cardCornerRadius="20dp"
-            android:elevation="10mm">
+            android:elevation="10mm"
+            android:onClick="createTodo">
 
             <TextView
                 android:layout_width="wrap_content"

@@ -2,6 +2,7 @@ package com.example.notanotebook;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,11 +10,15 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 public class InsideNotebookActivity extends AppCompatActivity implements NotebookCustomDialog.NotebookDialogInterface {
     String notebookId;
     String notebookName;
+
+    CardView createNote;
+    CardView createTodo;
 
     FirestoreRepository firestoreRepository = FirestoreRepository.getInstance();
     @Override
@@ -26,10 +31,21 @@ public class InsideNotebookActivity extends AppCompatActivity implements Noteboo
         notebookName = intent.getStringExtra(NotebookActivity.EXTRA_NOTEBOOK_NAME);
 
         setTitle(notebookName);
+
+        createNote = findViewById(R.id.add_note);
+        createTodo = findViewById(R.id.add_todo);
+
     }
 
+    //todo: onclicklistener for createNote
+    public void createNote(View view){
 
+    }
 
+    //todo: onclicklistener for createTodo
+    public void createTodo(View view){
+
+    }
 
 
     @Override
@@ -43,7 +59,7 @@ public class InsideNotebookActivity extends AppCompatActivity implements Noteboo
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch(item.getItemId()){
             case R.id.edit_notebook_title:
-                //todo :on click open the custom dialog and UPDATE notebook title only
+                //done:on click open the custom dialog and UPDATE notebook title only
                 NotebookCustomDialog notebookCustomDialog = new NotebookCustomDialog(notebookName);
                 notebookCustomDialog.show(getSupportFragmentManager(), "Edit Notebook Title");
                 return true;
@@ -55,11 +71,11 @@ public class InsideNotebookActivity extends AppCompatActivity implements Noteboo
 
     @Override
     public void createNotebook(String notebookTitle) {
-        //todo call fireRepository query to update title
+        //done: call fireRepository query to update title
         firestoreRepository.editNotebook(notebookId, notebookTitle);
         Toast.makeText(this, "Notebook Title Updated", Toast.LENGTH_SHORT).show();
 
-        //todo setTitle(new name)
+        //done: setTitle(new name)
         setTitle(notebookTitle);
     }
 }
