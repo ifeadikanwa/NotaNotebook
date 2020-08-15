@@ -9,16 +9,21 @@ public class NotebookContent {
     private String notebookId;
     private String notebookContentId;
     private String title;
+    private int color;
     @ServerTimestamp private Date createdTime;
     @ServerTimestamp private Date latestUpdateTime;
     private boolean isNote;
     private String noteContent;
     private List<String> todoContent;
 
-    public NotebookContent(String notebookId, String notebookContentId, String title, Date createdTime, Date latestUpdateTime, boolean isNote) {
+    public NotebookContent() {
+    }
+
+    public NotebookContent(String notebookId, String notebookContentId, String title, int color, Date createdTime, Date latestUpdateTime, boolean isNote) {
         this.notebookId = notebookId;
         this.notebookContentId = notebookContentId;
         this.title = title;
+        this.color = color;
         this.createdTime = createdTime;
         this.latestUpdateTime = latestUpdateTime;
         this.isNote = isNote;
@@ -46,6 +51,10 @@ public class NotebookContent {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public int getColor() {
+        return color;
     }
 
     public Date getCreatedTime() {

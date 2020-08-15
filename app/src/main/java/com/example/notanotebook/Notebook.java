@@ -15,13 +15,15 @@ public class Notebook {
     private String notebookId;
     @ServerTimestamp private Date latestUpdateTime;
     private boolean archive;
+    private int color;
 
     public Notebook(){
     }
 
-    public Notebook(String notebookId, String name, int contents, Date latestUpdateTime, boolean archive) {
+    public Notebook(String notebookId, String name, int contents, int color, Date latestUpdateTime, boolean archive) {
         this.name = name;
         this.contents = contents;
+        this.color = color;
         this.latestUpdateTime = latestUpdateTime;
         this.notebookId = notebookId;
         this.archive = archive;
@@ -41,6 +43,10 @@ public class Notebook {
 
     public int getContents() {
         return contents;
+    }
+
+    public int getColor() {
+        return color;
     }
 
     public Date getLatestUpdateTime() {

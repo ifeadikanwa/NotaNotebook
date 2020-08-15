@@ -1,5 +1,6 @@
 package com.example.notanotebook;
 
+import android.graphics.Color;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -11,18 +12,21 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.List;
 
 public class FirestoreRepository {
     public static final String TAG = "FIRESTORE_REPOSITORY";
     private static FirestoreRepository instance;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
     public static final String NAME_FIELD = "name";
     public static final String CONTENTS_FIELD = "contents";
     public static final String DATE_FIELD = "latestUpdateTime";
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    public static final String COLOR_FIELD = "color";
     CollectionReference notebookRef = db.collection("Notebooks");
-    final String NOTEBOOK_CONTENT_COLLECTION = "Notebook Content";
+    public static final String NOTEBOOK_CONTENT_COLLECTION = "Notebook Content";
 
     private FirestoreRepository(){
     }
@@ -37,9 +41,10 @@ public class FirestoreRepository {
         DocumentReference documentReference =  notebookRef.document();
 
         int contents = 0;
+        int color = Color.parseColor("#1E90FF");
         String documentId = documentReference.getId();
 
-        Notebook notebook = new Notebook(documentId, name, contents, null, false);
+        Notebook notebook = new Notebook(documentId, name, contents, color,  null, false);
 
         documentReference.set(notebook)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -84,11 +89,11 @@ public class FirestoreRepository {
     }
 
     //done: add new note
-    void createNewNote(final String notebookId, String title, String noteContent){
+    void createNewNote(final String notebookId, String title, int color, String noteContent){
         DocumentReference notebookContentDocRef = notebookRef.document(notebookId)
                 .collection(NOTEBOOK_CONTENT_COLLECTION).document();
 
-        NotebookContent content = new NotebookContent(notebookId,notebookContentDocRef.getId(), title,null,null,true);
+        NotebookContent content = new NotebookContent(notebookId,notebookContentDocRef.getId(), title, color,null,null,true);
         content.setNoteContent(noteContent);
 
         notebookContentDocRef.set(content)
@@ -109,11 +114,11 @@ public class FirestoreRepository {
     }
 
     //done: add new to-do
-    void createNewTodo(final String notebookId, String title, List<String> todoContent){
+    void createNewTodo(final String notebookId, int color, String title, List<String> todoContent){
         DocumentReference notebookContentDocRef = notebookRef.document(notebookId)
                 .collection(NOTEBOOK_CONTENT_COLLECTION).document();
 
-        NotebookContent content = new NotebookContent(notebookId, notebookContentDocRef.getId(), title,null,null,false);
+        NotebookContent content = new NotebookContent(notebookId, notebookContentDocRef.getId(), title, color,null,null,false);
         content.setTodoContent(todoContent);
 
         notebookContentDocRef.set(content)
@@ -131,6 +136,25 @@ public class FirestoreRepository {
                         Log.e(TAG, e.toString());
                     }
                 });
+    }
+
+    //update color of notebook and notebook content
+    void updateColor(String notebookId, final int color){
+        notebookRef.document(notebookId).update(COLOR_FIELD, color);
+
+//        notebookRef.document(notebookId)
+//                .collection(NOTEBOOK_CONTENT_COLLECTION).get()
+//                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+//                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+//                            if (documentSnapshot.exists()) {
+//                                documentSnapshot.getReference().update(COLOR_FIELD, color);
+//                            }
+//
+//                        }
+//                    }
+//                });
     }
 
 

@@ -2,11 +2,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".InsideNotebookActivity">
+    tools:context=".NotebookContentActivity">
 
     <item android:id="@+id/edit_notebook_title"
         android:title="@string/edit_notebook"
         android:icon="@drawable/ic_notebook_edit"
+        app:showAsAction="always"/>
+
+    <item android:id="@+id/edit_notebook_color"
+        android:title="@string/edit_color"
+        android:icon="@drawable/ic_color_lens"
         app:showAsAction="always"/>
 
 </menu>

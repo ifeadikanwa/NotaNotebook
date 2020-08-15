@@ -1,31 +1,26 @@
 package com.example.notanotebook;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 public class NotebookActivity extends AppCompatActivity implements NotebookCustomDialog.NotebookDialogInterface {
     public static final String EXTRA_NOTEBOOK_ID = "com.example.notanotebook.EXTRA_NOTEBOOK_ID";
     public static final String EXTRA_NOTEBOOK_NAME = "com.example.notanotebook.EXTRA_NOTEBOOK_NAME";
+    public static final String EXTRA_NOTEBOOK_COLOR = "com.example.notanotebook.EXTRA_NOTEBOOK_COLOR";
 
 
     private NotebookViewModel notebookViewModel;
@@ -68,6 +63,7 @@ public class NotebookActivity extends AppCompatActivity implements NotebookCusto
     private void setUpRecyclerView() {
         Query query = firestoreRepository.notebookRef.whereEqualTo("archive", false)
                 .orderBy("latestUpdateTime", Query.Direction.DESCENDING);
+
         FirestoreRecyclerOptions<Notebook> options = new FirestoreRecyclerOptions.Builder<Notebook>()
                 .setQuery(query, Notebook.class)
                 .build();
@@ -102,12 +98,14 @@ public class NotebookActivity extends AppCompatActivity implements NotebookCusto
                 Notebook notebook = documentSnapshot.toObject(Notebook.class);
                 String notebookId = notebook.getNotebookId();
                 String notebookName = notebook.getName();
+                int notebookColor = notebook.getColor();
 
                 firestoreRepository.updateNotebookTimestamp(notebookId);
 
-                Intent intent = new Intent(NotebookActivity.this, InsideNotebookActivity.class);
+                Intent intent = new Intent(NotebookActivity.this, NotebookContentActivity.class);
                 intent.putExtra(EXTRA_NOTEBOOK_NAME, notebookName);
                 intent.putExtra(EXTRA_NOTEBOOK_ID, notebookId);
+                intent.putExtra(EXTRA_NOTEBOOK_COLOR, String.valueOf(notebookColor));
                 startActivity(intent);
             }
         });

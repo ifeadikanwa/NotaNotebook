@@ -5,21 +5,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/notebookCard"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="15dp"
         app:cardBackgroundColor="@color/random_pastel"
         app:cardCornerRadius="40dp"
         app:cardElevation="5dp">
-
-<!--        <ImageButton-->
-<!--            android:id="@+id/notebook_edit_button"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:background="@drawable/ic_notebook_edit"-->
-<!--            android:layout_gravity="right"-->
-<!--            android:layout_marginTop="15dp"-->
-<!--            android:layout_marginEnd="15dp"/>-->
 
         <LinearLayout
             android:layout_width="match_parent"

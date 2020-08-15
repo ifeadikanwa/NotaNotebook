@@ -1,5 +1,6 @@
 package com.example.notanotebook;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,6 +8,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
@@ -23,14 +25,15 @@ public class NotebookAdapter extends FirestoreRecyclerAdapter<Notebook, Notebook
     }
 
     class NotebookHolder extends RecyclerView.ViewHolder {
-        //itemview is the cardview
         TextView notebookTitle;
         TextView notesCount;
+        CardView notebookCard;
 
         public NotebookHolder(@NonNull View itemView) {
             super(itemView);
             notebookTitle = itemView.findViewById(R.id.notebookTitle);
             notesCount = itemView.findViewById(R.id.notesCount);
+            notebookCard = itemView.findViewById(R.id.notebookCard);
 
             //we are going to set onclicklistener on the cardview
             // and then send it to the activity displaying the card to decide what happens on click.
@@ -51,6 +54,7 @@ public class NotebookAdapter extends FirestoreRecyclerAdapter<Notebook, Notebook
     public interface OnItemClickListener {
         void onItemClick(DocumentSnapshot documentSnapshot, int position);
     }
+
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.listener = listener;
     }
@@ -75,6 +79,8 @@ public class NotebookAdapter extends FirestoreRecyclerAdapter<Notebook, Notebook
         }
 
         holder.notesCount.setText(noteCount);
+
+        holder.notebookCard.setCardBackgroundColor(model.getColor());
     }
 
     @NonNull

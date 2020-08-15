@@ -64,7 +64,7 @@ public class NotebookCustomDialog extends AppCompatDialogFragment {
                 });
 
         titleEditText = view.findViewById(R.id.titleEditText);
-        if(!oldTitle.isEmpty()){
+        if(!(oldTitle == null)){
             titleEditText.setText(oldTitle);
         }
 

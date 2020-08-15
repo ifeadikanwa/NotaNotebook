@@ -3,4 +3,5 @@
     <string name="notebook">Notebook</string>
     <string name="space_notes"> notes</string>
     <string name="edit_notebook">Edit Notebook</string>
+    <string name="edit_color">Edit Color</string>
 </resources>
