@@ -4,9 +4,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Menu;
@@ -14,6 +15,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
+
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
 
@@ -25,13 +30,15 @@ public class NotebookContentActivity extends AppCompatActivity implements Notebo
     String notebookColor;
 
     CardView createNote;
-    CardView createTodo;
+    CardView createChecklist;
 
     //reference to ColorPicker class
     TheColors theColors = new TheColors();
     ArrayList<String> colors = new ArrayList<>();
 
     ActionBar actionBar;
+
+    NotebookContentAdapter adapter;
 
     FirestoreRepository firestoreRepository = FirestoreRepository.getInstance();
     @Override
@@ -53,10 +60,39 @@ public class NotebookContentActivity extends AppCompatActivity implements Notebo
         actionBar.setBackgroundDrawable(colorDrawable);
 
         createNote = findViewById(R.id.add_note);
-        createTodo = findViewById(R.id.add_todo);
+        createChecklist = findViewById(R.id.add_checklist);
 
         //set the colors for the picker
         colors = theColors.getColors();
+
+        setUpRecyclerView();
+    }
+
+    private void setUpRecyclerView() {
+        Query query = firestoreRepository.notebookRef.document(notebookId)
+                .collection(firestoreRepository.NOTEBOOK_CONTENT_COLLECTION)
+                .orderBy(FirestoreRepository.PRIORITY_FIELD, Query.Direction.DESCENDING)
+                .orderBy(FirestoreRepository.DATE_FIELD, Query.Direction.DESCENDING);
+
+        FirestoreRecyclerOptions<NotebookContent> options = new FirestoreRecyclerOptions.Builder<NotebookContent>()
+                .setQuery(query, NotebookContent.class)
+                .build();
+
+        adapter = new NotebookContentAdapter(options);
+
+        RecyclerView recyclerView  = findViewById(R.id.notebook_content_recyclerview);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        LinearLayoutManager VerticalLayout = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(VerticalLayout);
+        recyclerView.setAdapter(adapter);
+
+        adapter.setOnItemClickListener(new NotebookAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(DocumentSnapshot documentSnapshot, int position) {
+                //todo: open note view activity
+            }
+        });
 
     }
 
@@ -65,8 +101,8 @@ public class NotebookContentActivity extends AppCompatActivity implements Notebo
 
     }
 
-    //todo: onclicklistener for createTodo
-    public void createTodo(View view){
+    //todo: onclicklistener for createChecklist
+    public void createChecklist(View view){
 
     }
 

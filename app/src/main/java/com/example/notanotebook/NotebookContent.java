@@ -10,20 +10,22 @@ public class NotebookContent {
     private String notebookContentId;
     private String title;
     private int color;
+    private int priority;
     @ServerTimestamp private Date createdTime;
     @ServerTimestamp private Date latestUpdateTime;
     private boolean isNote;
     private String noteContent;
-    private List<String> todoContent;
+    private List<String> checklistContent;
 
     public NotebookContent() {
     }
 
-    public NotebookContent(String notebookId, String notebookContentId, String title, int color, Date createdTime, Date latestUpdateTime, boolean isNote) {
+    public NotebookContent(String notebookId, String notebookContentId, String title, int color, int priority, Date createdTime, Date latestUpdateTime, boolean isNote) {
         this.notebookId = notebookId;
         this.notebookContentId = notebookContentId;
         this.title = title;
         this.color = color;
+        this.priority = priority;
         this.createdTime = createdTime;
         this.latestUpdateTime = latestUpdateTime;
         this.isNote = isNote;
@@ -89,11 +91,11 @@ public class NotebookContent {
         this.noteContent = noteContent;
     }
 
-    public List<String> getTodoContent() {
-        return todoContent;
+    public List<String> getChecklistContent() {
+        return checklistContent;
     }
 
-    public void setTodoContent(List<String> todoContent) {
-        this.todoContent = todoContent;
+    public void setChecklistContent(List<String> checklistContent) {
+        this.checklistContent = checklistContent;
     }
 }

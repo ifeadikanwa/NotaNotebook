@@ -2,7 +2,6 @@ package com.example.notanotebook;
 
 import android.graphics.Color;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -12,8 +11,6 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.List;
 
@@ -25,8 +22,9 @@ public class FirestoreRepository {
     public static final String CONTENTS_FIELD = "contents";
     public static final String DATE_FIELD = "latestUpdateTime";
     public static final String COLOR_FIELD = "color";
-    CollectionReference notebookRef = db.collection("Notebooks");
-    public static final String NOTEBOOK_CONTENT_COLLECTION = "Notebook Content";
+    public static final String PRIORITY_FIELD = "priority";
+    final CollectionReference notebookRef = db.collection("Notebooks");
+    final String NOTEBOOK_CONTENT_COLLECTION = "Notebook Content";
 
     private FirestoreRepository(){
     }
@@ -93,7 +91,7 @@ public class FirestoreRepository {
         DocumentReference notebookContentDocRef = notebookRef.document(notebookId)
                 .collection(NOTEBOOK_CONTENT_COLLECTION).document();
 
-        NotebookContent content = new NotebookContent(notebookId,notebookContentDocRef.getId(), title, color,null,null,true);
+        NotebookContent content = new NotebookContent(notebookId,notebookContentDocRef.getId(), title, color, 0,null,null,true);
         content.setNoteContent(noteContent);
 
         notebookContentDocRef.set(content)
@@ -113,13 +111,13 @@ public class FirestoreRepository {
                 });
     }
 
-    //done: add new to-do
-    void createNewTodo(final String notebookId, int color, String title, List<String> todoContent){
+    //done: add new checklist
+    void createNewChecklist(final String notebookId, int color, String title, List<String> checklistContent){
         DocumentReference notebookContentDocRef = notebookRef.document(notebookId)
                 .collection(NOTEBOOK_CONTENT_COLLECTION).document();
 
-        NotebookContent content = new NotebookContent(notebookId, notebookContentDocRef.getId(), title, color,null,null,false);
-        content.setTodoContent(todoContent);
+        NotebookContent content = new NotebookContent(notebookId, notebookContentDocRef.getId(), title, color, 0,null,null,false);
+        content.setChecklistContent(checklistContent);
 
         notebookContentDocRef.set(content)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
