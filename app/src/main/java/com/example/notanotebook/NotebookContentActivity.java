@@ -106,11 +106,22 @@ public class NotebookContentActivity extends AppCompatActivity implements Notebo
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        adapter.startListening();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        adapter.stopListening();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.menu_inside_notebook, menu);
+        menuInflater.inflate(R.menu.menu_notebook_content, menu);
         return true;
     }
 
