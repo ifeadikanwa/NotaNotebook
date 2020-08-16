@@ -62,7 +62,7 @@ public class NotebookActivity extends AppCompatActivity implements NotebookCusto
 
     private void setUpRecyclerView() {
         Query query = firestoreRepository.notebookRef.whereEqualTo("archive", false)
-                .orderBy("latestUpdateTime", Query.Direction.DESCENDING);
+                .orderBy(FirestoreRepository.DATE_FIELD, Query.Direction.DESCENDING);
 
         FirestoreRecyclerOptions<Notebook> options = new FirestoreRecyclerOptions.Builder<Notebook>()
                 .setQuery(query, Notebook.class)

@@ -8,9 +8,9 @@
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="65dp"
-        app:cardCornerRadius="15dp"
-        app:cardElevation="3dp">
+        android:layout_height="50dp"
+        app:cardCornerRadius="5dp"
+        app:cardElevation="4dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -20,12 +20,11 @@
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/imageCardView"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:elevation="12dp"
-                app:cardCornerRadius="25dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                app:cardCornerRadius="15dp"
                 android:layout_centerHorizontal="true"
-                android:layout_marginLeft="5dp"
+                android:layout_marginLeft="10dp"
                 app:cardBackgroundColor="@color/colorAccent">
 
             <ImageView
@@ -43,9 +42,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="This is a Title"
-                android:textSize="30sp"
+                android:textSize="18sp"
+                android:textColor="@color/black"
                 android:layout_gravity="center"
-                android:layout_marginLeft="5dp"
+                android:layout_marginLeft="7dp"
                 android:layout_marginRight="3dp"
                 android:ellipsize="end"/>
 

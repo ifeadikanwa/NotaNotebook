@@ -83,8 +83,6 @@ public class NotebookContentActivity extends AppCompatActivity implements Notebo
         RecyclerView recyclerView  = findViewById(R.id.notebook_content_recyclerview);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        LinearLayoutManager VerticalLayout = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        recyclerView.setLayoutManager(VerticalLayout);
         recyclerView.setAdapter(adapter);
 
         adapter.setOnItemClickListener(new NotebookAdapter.OnItemClickListener() {
@@ -93,16 +91,6 @@ public class NotebookContentActivity extends AppCompatActivity implements Notebo
                 //todo: open note view activity
             }
         });
-
-    }
-
-    //todo: onclicklistener for createNote
-    public void createNote(View view){
-
-    }
-
-    //todo: onclicklistener for createChecklist
-    public void createChecklist(View view){
 
     }
 
@@ -117,6 +105,21 @@ public class NotebookContentActivity extends AppCompatActivity implements Notebo
         super.onStop();
         adapter.stopListening();
     }
+
+
+    //done: onclicklistener for createNote, opens NoteEditActivity
+    public void createNote(View view){
+        Intent intent = new Intent(this, NoteEditActivity.class);
+        intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_ID, notebookId);
+        intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_COLOR, notebookColor);
+        startActivity(intent);
+    }
+
+    //todo: onclicklistener for createChecklist
+    public void createChecklist(View view){
+
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -163,6 +166,8 @@ public class NotebookContentActivity extends AppCompatActivity implements Notebo
 
                         firestoreRepository.updateColor(notebookId, color);
 
+                        //also update the notebookColor variable so we can send the updated version with the intents
+                        notebookColor = String.valueOf(color);
                     }
 
                     @Override

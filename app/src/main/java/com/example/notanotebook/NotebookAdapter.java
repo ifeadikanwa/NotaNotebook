@@ -72,10 +72,10 @@ public class NotebookAdapter extends FirestoreRecyclerAdapter<Notebook, Notebook
         int contentsSize = model.getContents();
         String noteCount;
         if(contentsSize < 2){
-            noteCount = String.valueOf(model.getContents()) + " note";
+            noteCount = String.valueOf(model.getContents()) + " Note";
         }
         else {
-            noteCount = String.valueOf(model.getContents()) + " notes";
+            noteCount = String.valueOf(model.getContents()) + " Notes";
         }
 
         holder.notesCount.setText(noteCount);

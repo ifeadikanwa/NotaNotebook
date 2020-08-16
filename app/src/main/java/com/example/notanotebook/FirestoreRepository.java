@@ -87,7 +87,7 @@ public class FirestoreRepository {
     }
 
     //done: add new note
-    void createNewNote(final String notebookId, String title, int color, String noteContent){
+    void createNewNote(final String notebookId, int color, String title, String noteContent){
         DocumentReference notebookContentDocRef = notebookRef.document(notebookId)
                 .collection(NOTEBOOK_CONTENT_COLLECTION).document();
 

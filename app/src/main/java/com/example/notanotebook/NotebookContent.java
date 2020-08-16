@@ -75,6 +75,14 @@ public class NotebookContent {
         this.latestUpdateTime = latestUpdateTime;
     }
 
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
+
     public boolean isNote() {
         return isNote;
     }

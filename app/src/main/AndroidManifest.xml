@@ -9,7 +9,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".NoteEditActivity"></activity>
+        <activity android:name=".NoteEditActivity"
+            android:parentActivityName=".NotebookContentActivity"
+            android:theme="@style/NoteEditActivityTheme">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".NotebookContentActivity" />
+        </activity>
         <activity
             android:name=".NotebookContentActivity"
             android:label="Notebook Content"
