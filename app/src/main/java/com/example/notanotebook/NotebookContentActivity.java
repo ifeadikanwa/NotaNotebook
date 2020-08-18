@@ -83,6 +83,8 @@ public class NotebookContentActivity extends AppCompatActivity implements Notebo
         RecyclerView recyclerView  = findViewById(R.id.notebook_content_recyclerview);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
+        LinearLayoutManager VerticalLayout = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(VerticalLayout);
         recyclerView.setAdapter(adapter);
 
         adapter.setOnItemClickListener(new NotebookAdapter.OnItemClickListener() {
@@ -99,6 +101,7 @@ public class NotebookContentActivity extends AppCompatActivity implements Notebo
         super.onStart();
         adapter.startListening();
     }
+
 
     @Override
     protected void onStop() {
@@ -117,7 +120,9 @@ public class NotebookContentActivity extends AppCompatActivity implements Notebo
 
     //todo: onclicklistener for createChecklist
     public void createChecklist(View view){
-
+        Intent intent = new Intent(this, ChecklistEditActivity.class);
+        intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_ID, notebookId);
+        startActivity(intent);
     }
 
 

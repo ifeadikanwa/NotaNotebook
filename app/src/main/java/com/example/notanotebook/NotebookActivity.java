@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -24,6 +25,7 @@ public class NotebookActivity extends AppCompatActivity implements NotebookCusto
 
 
     private NotebookViewModel notebookViewModel;
+    private RecyclerView recyclerView;
     private NotebookAdapter adapter;
     private FloatingActionButton add_notebook;
     private FirestoreRepository firestoreRepository;
@@ -70,7 +72,7 @@ public class NotebookActivity extends AppCompatActivity implements NotebookCusto
 
         adapter = new NotebookAdapter(options);
 
-        RecyclerView recyclerView  = findViewById(R.id.notebook_recyclerview);
+        recyclerView  = findViewById(R.id.notebook_recyclerview);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         LinearLayoutManager HorizontalLayout = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);

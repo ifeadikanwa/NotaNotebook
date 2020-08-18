@@ -11,8 +11,12 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class FirestoreRepository {
     public static final String TAG = "FIRESTORE_REPOSITORY";
@@ -138,21 +142,22 @@ public class FirestoreRepository {
 
     //update color of notebook and notebook content
     void updateColor(String notebookId, final int color){
-        notebookRef.document(notebookId).update(COLOR_FIELD, color);
+            notebookRef.document(notebookId).update(COLOR_FIELD, color);
 
-//        notebookRef.document(notebookId)
-//                .collection(NOTEBOOK_CONTENT_COLLECTION).get()
-//                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-//                    @Override
-//                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-//                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-//                            if (documentSnapshot.exists()) {
-//                                documentSnapshot.getReference().update(COLOR_FIELD, color);
-//                            }
-//
-//                        }
-//                    }
-//                });
+            notebookRef.document(notebookId)
+                    .collection(NOTEBOOK_CONTENT_COLLECTION).get()
+                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                        @Override
+                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                            for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                                if (documentSnapshot.exists()) {
+                                    documentSnapshot.getReference().update(COLOR_FIELD, color);
+                                }
+
+                            }
+                        }
+                    });
+
     }
 
 
