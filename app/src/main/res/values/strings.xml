@@ -6,5 +6,5 @@
     <string name="edit_color">Edit Color</string>
     <string name="done">done</string>
     <string name="short_app_name">Nota</string>
-    <string name="enter_text">Enter text</string>
+    <string name="enter_item_text">Enter checklist item</string>
 </resources>

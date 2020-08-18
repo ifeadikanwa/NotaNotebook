@@ -18,7 +18,7 @@ public class ChecklistEditActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_note_edit, menu);
+        inflater.inflate(R.menu.menu_checklist_edit, menu);
         return true;
     }
 
