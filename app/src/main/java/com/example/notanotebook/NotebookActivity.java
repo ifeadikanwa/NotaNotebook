@@ -17,10 +17,12 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 
-public class NotebookActivity extends AppCompatActivity implements NotebookCustomDialog.NotebookDialogInterface {
+public class NotebookActivity extends AppCompatActivity implements NotebookCustomDialog.TitleDialogInterface {
     public static final String EXTRA_NOTEBOOK_ID = "com.example.notanotebook.EXTRA_NOTEBOOK_ID";
     public static final String EXTRA_NOTEBOOK_NAME = "com.example.notanotebook.EXTRA_NOTEBOOK_NAME";
     public static final String EXTRA_NOTEBOOK_COLOR = "com.example.notanotebook.EXTRA_NOTEBOOK_COLOR";
+    public static final String EXTRA_NOTEBOOK_CONTENT_ID = "com.example.notanotebook.EXTRA_NOTEBOOK_CONTENT_ID";
+    public static final String EXTRA_NOTEBOOK_CONTENT_TITLE = "com.example.notanotebook.EXTRA_NOTEBOOK_CONTENT_TITLE";
 
 
     private NotebookViewModel notebookViewModel;

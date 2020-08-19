@@ -2,8 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <item android:id="@+id/edit_checklist_title"
+        android:title="Edit"
+        android:icon="@drawable/ic_notebook_edit"
+        app:showAsAction="always"/>
+
     <item android:id="@+id/done_button"
         android:title="@string/done"
+        android:icon="@drawable/ic_done"
         app:showAsAction="always"/>
 
 

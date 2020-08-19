@@ -15,7 +15,7 @@ public class NotebookContent {
     @ServerTimestamp private Date latestUpdateTime;
     private boolean isNote;
     private String noteContent;
-    private List<String> checklistContent;
+    private String checklistContent;
 
     public NotebookContent() {
     }
@@ -99,11 +99,11 @@ public class NotebookContent {
         this.noteContent = noteContent;
     }
 
-    public List<String> getChecklistContent() {
+    public String getChecklistContent() {
         return checklistContent;
     }
 
-    public void setChecklistContent(List<String> checklistContent) {
+    public void setChecklistContent(String checklistContent) {
         this.checklistContent = checklistContent;
     }
 }

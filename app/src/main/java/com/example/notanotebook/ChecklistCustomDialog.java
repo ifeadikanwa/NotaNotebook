@@ -14,16 +14,17 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
-public class NotebookCustomDialog extends AppCompatDialogFragment {
-    TitleDialogInterface customDialogInterface;
+public class ChecklistCustomDialog extends AppCompatDialogFragment {
+
+    ChecklistCustomDialog.TitleDialogInterface customDialogInterface;
     EditText titleEditText;
     String oldTitle;
 
-    public NotebookCustomDialog(){
+    public ChecklistCustomDialog(){
     }
 
-    //constructor for updating notebook title, old title will be passed in and displayed in edit text
-    public NotebookCustomDialog(String oldTitle){
+    //constructor for updating checklist title, old title will be passed in and displayed in edit text
+    public ChecklistCustomDialog(String oldTitle){
         this.oldTitle = oldTitle;
     }
 
@@ -39,7 +40,7 @@ public class NotebookCustomDialog extends AppCompatDialogFragment {
         View view = inflater.inflate(R.layout.edit_title_dialog, null);
 
         builder.setView(view)
-                .setTitle("Enter Notebook Title")
+                .setTitle("Enter Checklist Title:")
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -54,7 +55,7 @@ public class NotebookCustomDialog extends AppCompatDialogFragment {
                         //here we are using our custom dialog interface to send data to the activity that calls it
                         String title = titleEditText.getText().toString();
                         if(!title.isEmpty()){
-                            customDialogInterface.createNotebook(title);
+                            customDialogInterface.createChecklist(title);
                         }
                         else {
                             Toast.makeText(getActivity(), "title can't be empty", Toast.LENGTH_SHORT).show();
@@ -72,18 +73,18 @@ public class NotebookCustomDialog extends AppCompatDialogFragment {
     }
 
 
-//our custom interface for sending data to the activity that implements it
+    //our custom interface for sending data to the activity that implements it
     public interface TitleDialogInterface {
 
-        void createNotebook(String Title);
+        void createChecklist(String Title);
 
     }
 
-//initialize the custom interface variable in onAttach
+    //initialize the custom interface variable in onAttach
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
 
-        customDialogInterface = (TitleDialogInterface) context;
+        customDialogInterface = (ChecklistCustomDialog.TitleDialogInterface) context;
     }
 }

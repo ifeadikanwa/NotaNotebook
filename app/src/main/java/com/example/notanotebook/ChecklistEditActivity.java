@@ -2,7 +2,11 @@ package com.example.notanotebook;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.DownloadManager;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
@@ -11,31 +15,23 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 
-public class ChecklistEditActivity extends AppCompatActivity {
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.Query;
+
+public class ChecklistEditActivity extends AppCompatActivity implements ChecklistCustomDialog.TitleDialogInterface {
     private String notebookId;
+    private String notebookContentId;
+    private String notebookContentTitle;
+    FirestoreRepository firestoreRepository;
+    RecyclerView recyclerView;
+    ChecklistAdapter adapter;
+    ImageButton add_item_button;
+    TextInputEditText item_edit_text;
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_checklist_edit, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch(item.getItemId()){
-            case R.id.done_button:
-                //todo save checklist to firestore
-                return true;
-            case android.R.id.home:
-                //todo warn the user- keep editing or discard changes
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,11 +43,124 @@ public class ChecklistEditActivity extends AppCompatActivity {
             getWindow().setStatusBarColor(Color.WHITE);
         }
 
-        setTitle("");
-
         setContentView(R.layout.activity_checklist_edit);
 
         Intent intent = getIntent();
         notebookId = intent.getStringExtra(NotebookActivity.EXTRA_NOTEBOOK_ID);
+        notebookContentId = intent.getStringExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_ID);
+        notebookContentTitle = intent.getStringExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_TITLE);
+
+        setTitle(notebookContentTitle);
+
+        firestoreRepository = FirestoreRepository.getInstance();
+        add_item_button = findViewById(R.id.add_checklist_entry);
+        item_edit_text = findViewById(R.id.checklist_edittext);
+
+        setupRecyclerView();
+    }
+
+    private void setupRecyclerView() {
+        Query query = firestoreRepository.notebookRef
+                .document(notebookId)
+                .collection(FirestoreRepository.NOTEBOOK_CONTENT_COLLECTION)
+                .document(notebookContentId)
+                .collection(FirestoreRepository.CHECKLIST_CONTENT_COLLECTION)
+                .orderBy(FirestoreRepository.CHECKED_FIELD, Query.Direction.DESCENDING);
+
+        FirestoreRecyclerOptions<Checklist_Item> options = new FirestoreRecyclerOptions.Builder<Checklist_Item>()
+                .setQuery(query, Checklist_Item.class)
+                .build();
+
+        adapter = new ChecklistAdapter(options);
+
+        recyclerView  = findViewById(R.id.checklist_recyclerview);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        LinearLayoutManager VerticalLayout = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(VerticalLayout);
+        recyclerView.setAdapter(adapter);
+
+        adapter.setOnItemClickListener(new ChecklistAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(DocumentSnapshot documentSnapshot, int position) {
+                //todo: open dialog to edit checklist entry
+            }
+        });
+
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                //todo: delete checklist entry(DOCUMENT AT THAT POSITION)
+            }
+        }).attachToRecyclerView(recyclerView);
+    }
+
+
+
+    public void add_item(View view){
+        String item_text = item_edit_text.getText().toString();
+        String text_trimmed = item_text.trim();
+        if(!(text_trimmed.length() == 0)){
+            firestoreRepository.addChecklistItem(notebookId, notebookContentId, item_text);
+            item_edit_text.setText("");
+        }
+    }
+
+
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_checklist_edit, menu);
+        return true;
+    }
+
+
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch(item.getItemId()){
+            case R.id.edit_checklist_title:
+                //done: open custom dialog to edit title, update action bar and database
+                ChecklistCustomDialog checklistCustomDialog = new ChecklistCustomDialog(notebookContentTitle);
+                checklistCustomDialog.show(getSupportFragmentManager(), "Edit Title");
+                return true;
+            case R.id.done_button:
+                //todo save checklist to firestore
+                return true;
+            case android.R.id.home:
+                //todo warn the user- keep editing or discard changes
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        adapter.startListening();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        adapter.stopListening();
+    }
+
+    @Override
+    public void createChecklist(String Title) {
+        //done: update title in titlebar and firestore
+        firestoreRepository.updateChecklistTitle(notebookId, notebookContentId, Title);
+
+        notebookContentTitle = Title;
+
+        setTitle(notebookContentTitle);
     }
 }

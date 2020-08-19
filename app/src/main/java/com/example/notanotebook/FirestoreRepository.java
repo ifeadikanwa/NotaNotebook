@@ -27,8 +27,13 @@ public class FirestoreRepository {
     public static final String DATE_FIELD = "latestUpdateTime";
     public static final String COLOR_FIELD = "color";
     public static final String PRIORITY_FIELD = "priority";
+    public static final String TITLE_FIELD = "title";
+    public static final String CHECKED_FIELD = "checked";
+    public static final String CHECKLIST_DOC_ID_FIELD = "item_id";
     final CollectionReference notebookRef = db.collection("Notebooks");
-    final String NOTEBOOK_CONTENT_COLLECTION = "Notebook Content";
+    static final String NOTEBOOK_CONTENT_COLLECTION = "Notebook Content";
+    static final String CHECKLIST_CONTENT_COLLECTION = "Checklist Content";
+
 
     private FirestoreRepository(){
     }
@@ -116,12 +121,13 @@ public class FirestoreRepository {
     }
 
     //done: add new checklist
-    void createNewChecklist(final String notebookId, int color, String title, List<String> checklistContent){
+    String createNewChecklist(final String notebookId, int color, String title){
         DocumentReference notebookContentDocRef = notebookRef.document(notebookId)
                 .collection(NOTEBOOK_CONTENT_COLLECTION).document();
 
-        NotebookContent content = new NotebookContent(notebookId, notebookContentDocRef.getId(), title, color, 0,null,null,false);
-        content.setChecklistContent(checklistContent);
+        String docId = notebookContentDocRef.getId();
+
+        NotebookContent content = new NotebookContent(notebookId, docId, title, color, 0,null,null,false);
 
         notebookContentDocRef.set(content)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -138,6 +144,8 @@ public class FirestoreRepository {
                         Log.e(TAG, e.toString());
                     }
                 });
+
+        return docId;
     }
 
     //update color of notebook and notebook content
@@ -158,6 +166,37 @@ public class FirestoreRepository {
                         }
                     });
 
+    }
+
+    void updateChecklistTitle(String notebookId, String notebookContentId, String title){
+        notebookRef.document(notebookId)
+                .collection(NOTEBOOK_CONTENT_COLLECTION).document(notebookContentId)
+                .update(TITLE_FIELD, title);
+    }
+
+
+    void addChecklistItem(String notebookId, String notebookContentId, String item){
+        Checklist_Item checklistItem = new Checklist_Item(item, false);
+
+        notebookRef.document(notebookId)
+                .collection(NOTEBOOK_CONTENT_COLLECTION)
+                .document(notebookContentId)
+                .collection(CHECKLIST_CONTENT_COLLECTION)
+                .add(checklistItem)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        String id = documentReference.getId();
+                        documentReference.update(CHECKLIST_DOC_ID_FIELD, id);
+                        Log.i(TAG, "Item Added");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG, e.toString());
+                    }
+                });
     }
 
 

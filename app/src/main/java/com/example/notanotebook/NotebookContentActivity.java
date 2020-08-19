@@ -24,7 +24,7 @@ import java.util.ArrayList;
 
 import petrov.kristiyan.colorpicker.ColorPicker;
 
-public class NotebookContentActivity extends AppCompatActivity implements NotebookCustomDialog.NotebookDialogInterface {
+public class NotebookContentActivity extends AppCompatActivity implements NotebookCustomDialog.TitleDialogInterface, ChecklistCustomDialog.TitleDialogInterface {
     String notebookId;
     String notebookName;
     String notebookColor;
@@ -69,8 +69,9 @@ public class NotebookContentActivity extends AppCompatActivity implements Notebo
     }
 
     private void setUpRecyclerView() {
-        Query query = firestoreRepository.notebookRef.document(notebookId)
-                .collection(firestoreRepository.NOTEBOOK_CONTENT_COLLECTION)
+        Query query = firestoreRepository.notebookRef
+                .document(notebookId)
+                .collection(FirestoreRepository.NOTEBOOK_CONTENT_COLLECTION)
                 .orderBy(FirestoreRepository.PRIORITY_FIELD, Query.Direction.DESCENDING)
                 .orderBy(FirestoreRepository.DATE_FIELD, Query.Direction.DESCENDING);
 
@@ -118,11 +119,11 @@ public class NotebookContentActivity extends AppCompatActivity implements Notebo
         startActivity(intent);
     }
 
-    //todo: onclicklistener for createChecklist
+    //done: onclicklistener for createChecklist
     public void createChecklist(View view){
-        Intent intent = new Intent(this, ChecklistEditActivity.class);
-        intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_ID, notebookId);
-        startActivity(intent);
+        //open dialog for title of checklist
+        ChecklistCustomDialog checklistCustomDialog = new ChecklistCustomDialog();
+        checklistCustomDialog.show(getSupportFragmentManager(), "Enter Checklist Title");
     }
 
 
@@ -193,5 +194,18 @@ public class NotebookContentActivity extends AppCompatActivity implements Notebo
 
         //done: setTitle(new name)
         setTitle(notebookTitle);
+    }
+
+
+    @Override
+    public void createChecklist(String Title) {
+        //create checklist document
+        String contentDocId = firestoreRepository.createNewChecklist(notebookId, Integer.parseInt(notebookColor),Title);
+
+        Intent intent = new Intent(this, ChecklistEditActivity.class);
+        intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_ID, notebookId);
+        intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_ID, contentDocId);
+        intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_TITLE, Title);
+        startActivity(intent);
     }
 }
