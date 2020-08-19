@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -32,6 +33,7 @@ public class NotebookActivity extends AppCompatActivity implements NotebookCusto
     private RecyclerView recyclerView;
     private NotebookAdapter adapter;
     private FloatingActionButton add_notebook;
+    ImageButton archiveButton;
     private FirestoreRepository firestoreRepository;
 
 
@@ -44,6 +46,9 @@ public class NotebookActivity extends AppCompatActivity implements NotebookCusto
 
         add_notebook = findViewById(R.id.add_notebook);
         add_notebook.setOnClickListener(addNotebook);
+
+        archiveButton = findViewById(R.id.archive_button);
+        archiveButton.setOnClickListener(archiveListener);
 
         notebookViewModel = new ViewModelProvider(this).get(NotebookViewModel.class);
         notebookViewModel.initialize();
@@ -79,7 +84,7 @@ public class NotebookActivity extends AppCompatActivity implements NotebookCusto
                 return false;
             }
 
-            //onSwipe open dialog that asks delete, archive or cancel
+            //onSwipe open dialog that asks delete, archive
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 ShowWarningAlertDialog(viewHolder.getAdapterPosition());
@@ -129,6 +134,16 @@ public class NotebookActivity extends AppCompatActivity implements NotebookCusto
         }
     };
 
+    //OnClickListener for archive button, opens archive activity
+    View.OnClickListener archiveListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Intent intent = new Intent(NotebookActivity.this, ArchiveActivity.class);
+            startActivity(intent);
+        }
+    };
+
+
     //We collect data sent from the custom dialog and we use it to create a new notebook
     @Override
     public void createNotebook(String notebookTitle) {
@@ -153,6 +168,12 @@ public class NotebookActivity extends AppCompatActivity implements NotebookCusto
                         //done: delete notebook
                         adapter.deleteNotebook(position);
                         Toast.makeText(NotebookActivity.this, "Notebook Deleted", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        adapter.putBack(position);
                     }
                 })
                 .create();

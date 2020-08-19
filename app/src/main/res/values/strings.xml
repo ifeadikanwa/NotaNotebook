@@ -7,4 +7,5 @@
     <string name="done">done</string>
     <string name="short_app_name">Nota</string>
     <string name="enter_item_text">Add task</string>
+    <string name="archive">Archive</string>
 </resources>

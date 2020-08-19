@@ -96,9 +96,22 @@ public class NotebookAdapter extends FirestoreRecyclerAdapter<Notebook, Notebook
         firestoreRepository.deleteNotebook(getSnapshots().getSnapshot(position).getReference());
     }
 
+    //archive notebook
     public void archiveNotebook(int position){
         getSnapshots().getSnapshot(position).getReference().update("archive", true);
     }
 
+    //unarchive notebook
+    public void unArchiveNotebook(int position){
+        getSnapshots().getSnapshot(position).getReference().update("archive", false);
+        FirestoreRepository firestoreRepository = FirestoreRepository.getInstance();
+        firestoreRepository.updateNotebookTimestamp(getSnapshots().getSnapshot(position).getReference().getId());
+    }
+
+    public void putBack(int position){
+        getSnapshots().getSnapshot(position).getReference().update("archive", true);
+        getSnapshots().getSnapshot(position).getReference().update("archive", false);
+
+    }
 
 }

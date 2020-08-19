@@ -9,8 +9,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".NoteViewActivity"
+        <activity android:name=".ArchiveActivity"
+            android:parentActivityName=".NotebookActivity">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".NotebookActivity" />
+        </activity>
+        <activity
+            android:name=".NoteViewActivity"
             android:parentActivityName=".NotebookContentActivity">
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -49,6 +59,7 @@
         <activity
             android:name=".TestActivity"
             android:theme="@style/ChecklistEditActivityTheme">
+
         </activity>
         <activity android:name=".NotebookActivity">
             <intent-filter>
