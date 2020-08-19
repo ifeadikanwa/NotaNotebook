@@ -75,12 +75,17 @@ public class NoteEditActivity extends AppCompatActivity {
 
     private void saveNote() {
         String title = noteTitleEdit.getText().toString();
+        String content = noteContentEdit.getText().toString();
 
+        //if nothing is entered we don't want to save the note
+        if(title.trim().length() == 0 && content.trim().length() == 0){
+            return;
+        }
+
+        //if there is no title we want to give a default one
         if(title.trim().length() == 0){
             title = "untitled";
         }
-
-        String content = noteContentEdit.getText().toString();
 
         firestoreRepository.createNewNote(notebookId, notebookColor, title, content);
     }
