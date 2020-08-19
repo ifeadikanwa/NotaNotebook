@@ -63,6 +63,7 @@ public class NotebookContentAdapter extends FirestoreRecyclerAdapter<NotebookCon
                 public void onClick(View view) {
                     int position = getAdapterPosition();
                     if (position != RecyclerView.NO_POSITION && listener != null) {
+                        //we send the document snapshot and position
                         listener.onItemClick(getSnapshots().getSnapshot(position), position);
                     }
                 }
@@ -79,6 +80,7 @@ public class NotebookContentAdapter extends FirestoreRecyclerAdapter<NotebookCon
         this.listener = listener;
     }
 
+    //determine if the notebookContent to be deleted is a note or checklist and then direct action
     public void deleteNotebookContent(int position){
        NotebookContent notebookContent = getSnapshots().getSnapshot(position).toObject(NotebookContent.class);
        if(notebookContent.isNote()){
@@ -89,12 +91,14 @@ public class NotebookContentAdapter extends FirestoreRecyclerAdapter<NotebookCon
        }
 
     }
-    //todo delete note
+
+
+    //done delete note
     public void deleteNote(int position){
         getSnapshots().getSnapshot(position).getReference().delete();
     }
 
-    //todo delete checklist and all its babies
+    //done delete checklist and all its babies
     public void deleteChecklist(int position){
         DocumentReference documentReference = getSnapshots().getSnapshot(position).getReference();
 

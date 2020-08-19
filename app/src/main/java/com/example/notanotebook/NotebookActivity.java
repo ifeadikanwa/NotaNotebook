@@ -1,11 +1,13 @@
 package com.example.notanotebook;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -23,6 +25,7 @@ public class NotebookActivity extends AppCompatActivity implements NotebookCusto
     public static final String EXTRA_NOTEBOOK_COLOR = "com.example.notanotebook.EXTRA_NOTEBOOK_COLOR";
     public static final String EXTRA_NOTEBOOK_CONTENT_ID = "com.example.notanotebook.EXTRA_NOTEBOOK_CONTENT_ID";
     public static final String EXTRA_NOTEBOOK_CONTENT_TITLE = "com.example.notanotebook.EXTRA_NOTEBOOK_CONTENT_TITLE";
+    public static final String EXTRA_NOTEBOOK_CONTENT = "com.example.notanotebook.EXTRA_NOTEBOOK_CONTENT";
 
 
     private NotebookViewModel notebookViewModel;
@@ -50,17 +53,6 @@ public class NotebookActivity extends AppCompatActivity implements NotebookCusto
         setUpRecyclerView();
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        adapter.startListening();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        adapter.stopListening();
-    }
 
 
     private void setUpRecyclerView() {
@@ -87,10 +79,10 @@ public class NotebookActivity extends AppCompatActivity implements NotebookCusto
                 return false;
             }
 
+            //onSwipe open dialog that asks delete, archive or cancel
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                adapter.archiveItem(viewHolder.getAdapterPosition());
-                Toast.makeText(NotebookActivity.this, "Notebook Archived", Toast.LENGTH_SHORT).show();
+                ShowWarningAlertDialog(viewHolder.getAdapterPosition());
             }
         })
         .attachToRecyclerView(recyclerView);
@@ -115,6 +107,19 @@ public class NotebookActivity extends AppCompatActivity implements NotebookCusto
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        adapter.startListening();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        adapter.stopListening();
+    }
+
+    //OnClickListener for floating action button the adds new notebook
      View.OnClickListener addNotebook = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -128,5 +133,31 @@ public class NotebookActivity extends AppCompatActivity implements NotebookCusto
     @Override
     public void createNotebook(String notebookTitle) {
         firestoreRepository.addNotebook(notebookTitle);
+    }
+
+    //AlertDialog for deleting or archiving notebook.
+    private void ShowWarningAlertDialog(int position){
+        AlertDialog.Builder builder = new AlertDialog.Builder(NotebookActivity.this);
+        builder.setMessage("What would you like to do?")
+                .setPositiveButton("Archive", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        //done: archive notebook
+                        adapter.archiveNotebook(position);
+                        Toast.makeText(NotebookActivity.this, "Notebook Archived", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNeutralButton("Delete", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        //done: delete notebook
+                        adapter.deleteNotebook(position);
+                        Toast.makeText(NotebookActivity.this, "Notebook Deleted", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .create();
+
+        builder.show();
+
     }
 }

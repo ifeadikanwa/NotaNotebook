@@ -220,6 +220,13 @@ public class FirestoreRepository {
                 .update(CHECKLIST_ITEM_FIELD, newText);
     }
 
+    void updateNotebookContentTimestamp(String notebookId, String notebookContentId){
+        notebookRef.document(notebookId)
+                .collection(NOTEBOOK_CONTENT_COLLECTION)
+                .document(notebookContentId)
+                .update(DATE_FIELD, FieldValue.serverTimestamp());
+    }
+
     void deleteChecklist(DocumentReference documentReference){
          documentReference.collection(CHECKLIST_CONTENT_COLLECTION)
                 .get()
@@ -243,5 +250,35 @@ public class FirestoreRepository {
 
     }
 
+    void deleteNote(DocumentReference documentReference){
+        documentReference.delete();
+    }
+
+    void deleteNotebook(DocumentReference documentReference){
+        documentReference.collection(NOTEBOOK_CONTENT_COLLECTION)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        for (QueryDocumentSnapshot notebookContentDoc : task.getResult()) {
+                            NotebookContent notebookContent = notebookContentDoc.toObject(NotebookContent.class);
+                            if(notebookContent.isNote()){
+                                deleteNote(notebookContentDoc.getReference());
+                            }
+                            else{
+                                deleteChecklist(notebookContentDoc.getReference());
+                            }
+                        }
+
+                        documentReference.delete();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG, e.toString());
+                    }
+                });
+    }
 
 }

@@ -90,8 +90,13 @@ public class NotebookAdapter extends FirestoreRecyclerAdapter<Notebook, Notebook
         return new NotebookHolder(v);
     }
 
-    //archive notebook on swipe
-    public void archiveItem(int position) {
+    //delete notebook on swipe
+    public void deleteNotebook(int position) {
+        FirestoreRepository firestoreRepository = FirestoreRepository.getInstance();
+        firestoreRepository.deleteNotebook(getSnapshots().getSnapshot(position).getReference());
+    }
+
+    public void archiveNotebook(int position){
         getSnapshots().getSnapshot(position).getReference().update("archive", true);
     }
 

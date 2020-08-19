@@ -143,7 +143,7 @@ public class ChecklistEditActivity extends AppCompatActivity implements Checklis
                 checklistCustomDialog.show(getSupportFragmentManager(), "Edit Title");
                 return true;
             case R.id.done_button:
-                //done save checklist to firestore
+            case android.R.id.home:
                 finish();
                 return true;
             default:

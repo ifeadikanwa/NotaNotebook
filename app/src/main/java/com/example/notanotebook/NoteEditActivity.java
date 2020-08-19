@@ -1,8 +1,10 @@
 package com.example.notanotebook;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
@@ -12,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -21,6 +24,7 @@ public class NoteEditActivity extends AppCompatActivity {
     TextInputEditText noteContentEdit;
     String notebookId;
     int notebookColor;
+    boolean saved;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,11 +62,11 @@ public class NoteEditActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.done_button:
-                //done: create a new note
-                saveNote();
-                return true;
             case android.R.id.home:
-                //todo: open dialog box asking if they want to keep editing or discard the note
+                //todo: save note or UPDATE NOTE
+                saved = true;
+                saveNote();
+                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -71,15 +75,22 @@ public class NoteEditActivity extends AppCompatActivity {
 
     private void saveNote() {
         String title = noteTitleEdit.getText().toString();
+
+        if(title.trim().length() == 0){
+            title = "untitled";
+        }
+
         String content = noteContentEdit.getText().toString();
 
         firestoreRepository.createNewNote(notebookId, notebookColor, title, content);
-        finish();
     }
 
-    //todo: on back pressed: open dialog box asking if they want to keep editing or discard the note
+    //todo: on back pressed: save note or UPDATE NOTE
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
+    protected void onDestroy() {
+        if(!saved){
+            saveNote();
+        }
+        super.onDestroy();
     }
 }

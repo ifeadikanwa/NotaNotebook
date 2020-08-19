@@ -56,6 +56,9 @@ public class NotebookContentActivity extends AppCompatActivity implements Notebo
         //set the action bar title
         setTitle(notebookName);
 
+        if(notebookColor == null){
+
+        }
         //set the action bar color
         actionBar = getSupportActionBar();
         ColorDrawable colorDrawable = new ColorDrawable(Integer.parseInt(notebookColor));
@@ -93,8 +96,33 @@ public class NotebookContentActivity extends AppCompatActivity implements Notebo
         adapter.setOnItemClickListener(new NotebookAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(DocumentSnapshot documentSnapshot, int position) {
-                //todo: open note view activity.
+                //done: open note view activity.
                 //turn snapshot to object, check isNote and then determine behaviour from there
+                NotebookContent notebookContent = documentSnapshot.toObject(NotebookContent.class);
+                if(notebookContent.isNote()){
+                    //update timestamp
+                    firestoreRepository.updateNotebookContentTimestamp(notebookId, notebookContent.getNotebookContentId());
+
+                    //done: send intent to view activity
+                    Intent intent = new Intent(NotebookContentActivity.this, NoteViewActivity.class);
+                    intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_ID, notebookId);
+                    intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_NAME, notebookName);
+                    intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_ID, notebookContent.getNotebookContentId());
+                    intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_TITLE, notebookContent.getTitle());
+                    intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT, notebookContent.getNoteContent());
+                    startActivity(intent);
+                }
+                else{
+                    //update timestamp
+                    firestoreRepository.updateNotebookContentTimestamp(notebookId, notebookContent.getNotebookContentId());
+
+                    //done: send intent to checklist edit activity
+                    Intent intent = new Intent(NotebookContentActivity.this, ChecklistEditActivity.class);
+                    intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_ID, notebookId);
+                    intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_ID, notebookContent.getNotebookContentId());
+                    intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_TITLE, notebookContent.getTitle());
+                    startActivity(intent);
+                }
             }
         });
 
@@ -127,7 +155,7 @@ public class NotebookContentActivity extends AppCompatActivity implements Notebo
     }
 
 
-    //done: onclicklistener for createNote, opens NoteEditActivity
+    //done: onclicklistener for createNote button, opens NoteEditActivity
     public void createNote(View view){
         Intent intent = new Intent(this, NoteEditActivity.class);
         intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_ID, notebookId);
@@ -135,7 +163,7 @@ public class NotebookContentActivity extends AppCompatActivity implements Notebo
         startActivity(intent);
     }
 
-    //done: onclicklistener for createChecklist
+    //done: onclicklistener for createChecklist button, opens custom dialog
     public void createChecklist(View view){
         //open dialog for title of checklist
         ChecklistCustomDialog checklistCustomDialog = new ChecklistCustomDialog();
@@ -165,6 +193,9 @@ public class NotebookContentActivity extends AppCompatActivity implements Notebo
                 changeColor();
                 return true;
 
+            case android.R.id.home:
+                finish();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -212,10 +243,9 @@ public class NotebookContentActivity extends AppCompatActivity implements Notebo
         setTitle(notebookTitle);
     }
 
-
+    //create checklist document and then open checklistEditActivity
     @Override
     public void createChecklist(String Title) {
-        //create checklist document
         String contentDocId = firestoreRepository.createNewChecklist(notebookId, Integer.parseInt(notebookColor),Title);
 
         Intent intent = new Intent(this, ChecklistEditActivity.class);
