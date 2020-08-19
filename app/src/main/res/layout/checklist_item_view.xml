@@ -35,7 +35,7 @@
                 android:layout_marginRight="1dp"
                 android:layout_marginBottom="2dp"
                 android:textSize="18sp"
-                android:text="go shopping kfokef njfjeofj migjofjefi  jiofegovdshg iohg[g ihfgi hgd h hgiog gio[fgi hhgo[fgohf iohghg hiogfighpgfhgioe"/>
+                android:text="go shopping "/>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 

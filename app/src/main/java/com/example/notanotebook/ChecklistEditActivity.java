@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.DownloadManager;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
@@ -22,7 +21,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 
-public class ChecklistEditActivity extends AppCompatActivity implements ChecklistCustomDialog.TitleDialogInterface {
+public class ChecklistEditActivity extends AppCompatActivity implements ChecklistCustomDialog.TitleDialogInterface, Checklist_Item_Dialog.TextDialogInterface {
     private String notebookId;
     private String notebookContentId;
     private String notebookContentTitle;
@@ -65,7 +64,7 @@ public class ChecklistEditActivity extends AppCompatActivity implements Checklis
                 .collection(FirestoreRepository.NOTEBOOK_CONTENT_COLLECTION)
                 .document(notebookContentId)
                 .collection(FirestoreRepository.CHECKLIST_CONTENT_COLLECTION)
-                .orderBy(FirestoreRepository.CHECKED_FIELD, Query.Direction.DESCENDING);
+                .orderBy(FirestoreRepository.CHECKED_FIELD);
 
         FirestoreRecyclerOptions<Checklist_Item> options = new FirestoreRecyclerOptions.Builder<Checklist_Item>()
                 .setQuery(query, Checklist_Item.class)
@@ -83,11 +82,22 @@ public class ChecklistEditActivity extends AppCompatActivity implements Checklis
         adapter.setOnItemClickListener(new ChecklistAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(DocumentSnapshot documentSnapshot, int position) {
-                //todo: open dialog to edit checklist entry
+                //done: open dialog to edit checklist entry
+                Checklist_Item checklistItem = documentSnapshot.toObject(Checklist_Item.class);
+                Checklist_Item_Dialog checklist_item_dialog = new Checklist_Item_Dialog(checklistItem.getItem_id(), checklistItem.getItem());
+                checklist_item_dialog.show(getSupportFragmentManager(), "Edit Checklist Item");
+            }
+
+            @Override
+            public void onCheckboxClick(DocumentSnapshot documentSnapshot, int position, boolean checked) {
+                //done set checked to true;
+                Checklist_Item checklistItem = documentSnapshot.toObject(Checklist_Item.class);
+                firestoreRepository.updateCheckedField(notebookId, notebookContentId, checklistItem.getItem_id(), checked);
+
             }
         });
 
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
                 return false;
@@ -95,7 +105,8 @@ public class ChecklistEditActivity extends AppCompatActivity implements Checklis
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                //todo: delete checklist entry(DOCUMENT AT THAT POSITION)
+                //done: delete checklist entry(DOCUMENT AT THAT POSITION)
+                adapter.deleteItem(viewHolder.getAdapterPosition());
             }
         }).attachToRecyclerView(recyclerView);
     }
@@ -132,10 +143,8 @@ public class ChecklistEditActivity extends AppCompatActivity implements Checklis
                 checklistCustomDialog.show(getSupportFragmentManager(), "Edit Title");
                 return true;
             case R.id.done_button:
-                //todo save checklist to firestore
-                return true;
-            case android.R.id.home:
-                //todo warn the user- keep editing or discard changes
+                //done save checklist to firestore
+                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -162,5 +171,11 @@ public class ChecklistEditActivity extends AppCompatActivity implements Checklis
         notebookContentTitle = Title;
 
         setTitle(notebookContentTitle);
+    }
+
+
+    @Override
+    public void updateChecklistEntry(String item_id, String Text) {
+        firestoreRepository.updateChecklistItemText(notebookId, notebookContentId, item_id, Text);
     }
 }

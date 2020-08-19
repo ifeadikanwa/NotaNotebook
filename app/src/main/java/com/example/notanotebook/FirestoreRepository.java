@@ -5,8 +5,10 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
@@ -29,6 +31,7 @@ public class FirestoreRepository {
     public static final String PRIORITY_FIELD = "priority";
     public static final String TITLE_FIELD = "title";
     public static final String CHECKED_FIELD = "checked";
+    public static final String CHECKLIST_ITEM_FIELD = "item";
     public static final String CHECKLIST_DOC_ID_FIELD = "item_id";
     final CollectionReference notebookRef = db.collection("Notebooks");
     static final String NOTEBOOK_CONTENT_COLLECTION = "Notebook Content";
@@ -197,6 +200,47 @@ public class FirestoreRepository {
                         Log.e(TAG, e.toString());
                     }
                 });
+    }
+
+    void updateCheckedField(String notebookId, String notebookContentId, String checklistItemId, boolean checked){
+        notebookRef.document(notebookId)
+                .collection(NOTEBOOK_CONTENT_COLLECTION)
+                .document(notebookContentId)
+                .collection(CHECKLIST_CONTENT_COLLECTION)
+                .document(checklistItemId)
+                .update(CHECKED_FIELD, checked);
+    }
+
+    void updateChecklistItemText(String notebookId, String notebookContentId, String checklistItemId, String newText){
+        notebookRef.document(notebookId)
+                .collection(NOTEBOOK_CONTENT_COLLECTION)
+                .document(notebookContentId)
+                .collection(CHECKLIST_CONTENT_COLLECTION)
+                .document(checklistItemId)
+                .update(CHECKLIST_ITEM_FIELD, newText);
+    }
+
+    void deleteChecklist(DocumentReference documentReference){
+         documentReference.collection(CHECKLIST_CONTENT_COLLECTION)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            for (QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()){
+                                queryDocumentSnapshot.getReference().delete();
+                            }
+                            documentReference.delete();
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG, e.toString());
+                    }
+                });
+
     }
 
 

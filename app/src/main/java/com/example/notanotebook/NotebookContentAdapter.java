@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 public class NotebookContentAdapter extends FirestoreRecyclerAdapter<NotebookContent, NotebookContentAdapter.NotebookContentHolder> {
@@ -78,5 +79,26 @@ public class NotebookContentAdapter extends FirestoreRecyclerAdapter<NotebookCon
         this.listener = listener;
     }
 
+    public void deleteNotebookContent(int position){
+       NotebookContent notebookContent = getSnapshots().getSnapshot(position).toObject(NotebookContent.class);
+       if(notebookContent.isNote()){
+           deleteNote(position);
+       }
+       else {
+           deleteChecklist(position);
+       }
 
+    }
+    //todo delete note
+    public void deleteNote(int position){
+        getSnapshots().getSnapshot(position).getReference().delete();
+    }
+
+    //todo delete checklist and all its babies
+    public void deleteChecklist(int position){
+        DocumentReference documentReference = getSnapshots().getSnapshot(position).getReference();
+
+        FirestoreRepository firestoreRepository = FirestoreRepository.getInstance();
+        firestoreRepository.deleteChecklist(documentReference);
+    }
 }

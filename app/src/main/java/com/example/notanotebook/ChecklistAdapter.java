@@ -25,7 +25,9 @@ public class ChecklistAdapter extends FirestoreRecyclerAdapter<Checklist_Item, C
     @Override
     protected void onBindViewHolder(@NonNull ChecklistHolder holder, int position, @NonNull Checklist_Item model) {
         if(model.isChecked()){
-            holder.item_checkbox.isChecked();
+            holder.item_checkbox.setChecked(true);
+        }else{
+            holder.item_checkbox.setChecked(false);
         }
 
         holder.item_text.setText(model.getItem());
@@ -49,9 +51,7 @@ public class ChecklistAdapter extends FirestoreRecyclerAdapter<Checklist_Item, C
             item_text = itemView.findViewById(R.id.item_textview);
             item_checkbox = itemView.findViewById(R.id.checkbox_checklist);
 
-            //we are going to set onclicklistener on the cardview
-            // and then send it to the activity displaying the card to decide what happens on click.
-            //to do this we create an interface
+
             item_text.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -62,20 +62,32 @@ public class ChecklistAdapter extends FirestoreRecyclerAdapter<Checklist_Item, C
                 }
             });
 
-//            item_checkbox.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    //todo: on click check or uncheck box
-//                }
-//            });
+            item_checkbox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    //todo: on click check or uncheck box
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION && listener != null) {
+                        boolean isChecked = item_checkbox.isChecked();
+                        listener.onCheckboxClick(getSnapshots().getSnapshot(position), position, isChecked);
+                    }
+                }
+            });
         }
     }
 
     public interface OnItemClickListener {
         void onItemClick(DocumentSnapshot documentSnapshot, int position);
+
+        void onCheckboxClick(DocumentSnapshot documentSnapshot, int position, boolean checked);
     }
 
     public void setOnItemClickListener(ChecklistAdapter.OnItemClickListener listener) {
         this.listener = listener;
+    }
+
+    //delete item entry
+    public void deleteItem(int position) {
+        getSnapshots().getSnapshot(position).getReference().delete();
     }
 }
