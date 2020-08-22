@@ -21,6 +21,7 @@
         <activity
             android:name=".NoteViewActivity"
             android:screenOrientation="portrait"
+            android:theme="@style/Note_Edit_View_Activity_Theme"
             android:parentActivityName=".NotebookContentActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
@@ -43,7 +44,7 @@
             android:name=".NoteEditActivity"
             android:screenOrientation="portrait"
             android:parentActivityName=".NotebookContentActivity"
-            android:theme="@style/NoteEditActivityTheme">
+            android:theme="@style/Note_Edit_View_Activity_Theme">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
