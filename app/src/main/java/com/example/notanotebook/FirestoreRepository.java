@@ -16,6 +16,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -31,6 +32,7 @@ public class FirestoreRepository {
     public static final String PRIORITY_FIELD = "priority";
     public static final String TITLE_FIELD = "title";
     public static final String CHECKED_FIELD = "checked";
+    public static final String NOTE_CONTENT_FIELD = "noteContent";
     public static final String CHECKLIST_ITEM_FIELD = "item";
     public static final String CHECKLIST_DOC_ID_FIELD = "item_id";
     final CollectionReference notebookRef = db.collection("Notebooks");
@@ -98,6 +100,14 @@ public class FirestoreRepository {
                 });
     }
 
+    void increaseNotebookContentCount(String notebookId){
+        notebookRef.document(notebookId).update(CONTENTS_FIELD, FieldValue.increment(1));
+    }
+
+    void decreaseNotebookContentCount(String notebookId){
+        notebookRef.document(notebookId).update(CONTENTS_FIELD, FieldValue.increment(-1));
+    }
+
     //done: add new note
     void createNewNote(final String notebookId, int color, String title, String noteContent){
         DocumentReference notebookContentDocRef = notebookRef.document(notebookId)
@@ -111,7 +121,7 @@ public class FirestoreRepository {
                     @Override
                     public void onSuccess(Void aVoid) {
                         //done: increment content field in notebook document
-                        notebookRef.document(notebookId).update(CONTENTS_FIELD, FieldValue.increment(1));
+                        increaseNotebookContentCount(notebookId);
                         Log.i(TAG, "Note Created");
                     }
                 })
@@ -137,7 +147,7 @@ public class FirestoreRepository {
                     @Override
                     public void onSuccess(Void aVoid) {
                         //done: increment content field in notebook document
-                        notebookRef.document(notebookId).update(CONTENTS_FIELD, FieldValue.increment(1));
+                        increaseNotebookContentCount(notebookId);
                         Log.i(TAG, "Todo Created");
                     }
                 })
@@ -169,6 +179,19 @@ public class FirestoreRepository {
                         }
                     });
 
+    }
+
+    void updateNote(String notebookId, String notebookContentId, String title, String content){
+        HashMap<String, Object> updates = new HashMap<>();
+        updates.put(TITLE_FIELD, title);
+        updates.put(NOTE_CONTENT_FIELD, content);
+
+        notebookRef.document(notebookId)
+                .collection(NOTEBOOK_CONTENT_COLLECTION)
+                .document(notebookContentId)
+                .update(updates);
+
+        updateNotebookContentTimestamp(notebookId, notebookContentId);
     }
 
     void updateChecklistTitle(String notebookId, String notebookContentId, String title){
@@ -234,8 +257,10 @@ public class FirestoreRepository {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if(task.isSuccessful()){
-                            for (QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()){
-                                queryDocumentSnapshot.getReference().delete();
+                            if(task.getResult() != null){
+                                for (QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()){
+                                    queryDocumentSnapshot.getReference().delete();
+                                }
                             }
                             documentReference.delete();
                         }
@@ -260,16 +285,17 @@ public class FirestoreRepository {
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        for (QueryDocumentSnapshot notebookContentDoc : task.getResult()) {
-                            NotebookContent notebookContent = notebookContentDoc.toObject(NotebookContent.class);
-                            if(notebookContent.isNote()){
-                                deleteNote(notebookContentDoc.getReference());
-                            }
-                            else{
-                                deleteChecklist(notebookContentDoc.getReference());
+                        if(task.getResult() != null){
+                            for (QueryDocumentSnapshot notebookContentDoc : task.getResult()) {
+                                NotebookContent notebookContent = notebookContentDoc.toObject(NotebookContent.class);
+                                if(notebookContent.isNote()){
+                                    deleteNote(notebookContentDoc.getReference());
+                                }
+                                else{
+                                    deleteChecklist(notebookContentDoc.getReference());
+                                }
                             }
                         }
-
                         documentReference.delete();
                     }
                 })

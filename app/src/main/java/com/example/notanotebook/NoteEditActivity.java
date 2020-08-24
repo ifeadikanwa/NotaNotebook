@@ -4,25 +4,19 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
-import android.widget.Toast;
 
 import com.chinalwb.are.AREditText;
-import com.chinalwb.are.styles.IARE_Style;
-import com.chinalwb.are.styles.toolbar.ARE_ToolbarDefault;
 import com.chinalwb.are.styles.toolbar.IARE_Toolbar;
-import com.chinalwb.are.styles.toolitems.ARE_ToolItem_Abstract;
 import com.chinalwb.are.styles.toolitems.ARE_ToolItem_AlignmentCenter;
 import com.chinalwb.are.styles.toolitems.ARE_ToolItem_AlignmentLeft;
 import com.chinalwb.are.styles.toolitems.ARE_ToolItem_AlignmentRight;
@@ -31,7 +25,6 @@ import com.chinalwb.are.styles.toolitems.ARE_ToolItem_Bold;
 import com.chinalwb.are.styles.toolitems.ARE_ToolItem_FontColor;
 import com.chinalwb.are.styles.toolitems.ARE_ToolItem_FontSize;
 import com.chinalwb.are.styles.toolitems.ARE_ToolItem_Hr;
-import com.chinalwb.are.styles.toolitems.ARE_ToolItem_Image;
 import com.chinalwb.are.styles.toolitems.ARE_ToolItem_Italic;
 import com.chinalwb.are.styles.toolitems.ARE_ToolItem_Link;
 import com.chinalwb.are.styles.toolitems.ARE_ToolItem_ListBullet;
@@ -42,7 +35,6 @@ import com.chinalwb.are.styles.toolitems.ARE_ToolItem_Subscript;
 import com.chinalwb.are.styles.toolitems.ARE_ToolItem_Superscript;
 import com.chinalwb.are.styles.toolitems.ARE_ToolItem_Underline;
 import com.chinalwb.are.styles.toolitems.IARE_ToolItem;
-import com.chinalwb.are.styles.toolitems.IARE_ToolItem_Updater;
 import com.google.android.material.textfield.TextInputEditText;
 
 public class NoteEditActivity extends AppCompatActivity {
@@ -52,7 +44,11 @@ public class NoteEditActivity extends AppCompatActivity {
     IARE_Toolbar noteToolBar;
     String notebookId;
     int notebookColor;
-    boolean saved;
+    String notebookContentId;
+    String notebookContentTitle;
+    String notebookContent;
+    boolean fromNoteViewActivity;
+    boolean changesMade = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,13 +69,34 @@ public class NoteEditActivity extends AppCompatActivity {
         noteContentEdit = findViewById(R.id.are_edittext);
         firestoreRepository = FirestoreRepository.getInstance();
 
-        intialiseToolBar();
+        //touchlistener for listening to changes
+        noteTitleEdit.setOnTouchListener(touchListener);
+        noteContentEdit.setOnTouchListener(touchListener);
+
+        initialiseToolBar();
         Intent intent = getIntent();
-        notebookId = intent.getStringExtra(NotebookActivity.EXTRA_NOTEBOOK_ID);
-        notebookColor = Integer.parseInt(intent.getStringExtra(NotebookActivity.EXTRA_NOTEBOOK_COLOR));
+        fromNoteViewActivity = intent.getBooleanExtra(NotebookActivity.EXTRA_FROM_VIEW_ACTIVITY, false);
+
+        //if intent is from View Activity we want to load previous content and title to screen
+        if(fromNoteViewActivity){
+            notebookId = intent.getStringExtra(NotebookActivity.EXTRA_NOTEBOOK_ID);
+            notebookContentId = intent.getStringExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_ID);
+            notebookContentTitle = intent.getStringExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_TITLE);
+            notebookContent = intent.getStringExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT);
+
+            noteTitleEdit.setText(notebookContentTitle);
+            noteContentEdit.fromHtml(notebookContent);
+        }
+        //if intent is not from View Activity we want to create a fresh, new note
+        else {
+            notebookId = intent.getStringExtra(NotebookActivity.EXTRA_NOTEBOOK_ID);
+            notebookColor = Integer.parseInt(intent.getStringExtra(NotebookActivity.EXTRA_NOTEBOOK_COLOR));
+        }
+
+
     }
 
-    private void intialiseToolBar() {
+    private void initialiseToolBar() {
         noteToolBar = this.findViewById(R.id.are_toolbar);
         IARE_ToolItem bold = new ARE_ToolItem_Bold();
         IARE_ToolItem italic = new ARE_ToolItem_Italic();
@@ -122,6 +139,15 @@ public class NoteEditActivity extends AppCompatActivity {
         noteContentEdit.setToolbar(noteToolBar);
     }
 
+    //if any view with this touch listener is touched we want to recognise that as a change being made
+    View.OnTouchListener touchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            changesMade = true;
+            return false;
+        }
+    };
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
@@ -133,23 +159,92 @@ public class NoteEditActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.done_button:
+                if(fromNoteViewActivity){
+                    updateNote();
+                    exitIntent();
+                }
+                else{
+                    createNote();
+                    finish();
+                }
+                return true;
             case android.R.id.home:
-                //todo: save note or UPDATE NOTE
-                saved = true;
-                saveNote();
-                finish();
+                //todo: create note or UPDATE NOTE
+                if(fromNoteViewActivity){
+                    if(changesMade){
+                        openSaveWarningDialog();
+                    }
+                }
+                else{
+                    createNote();
+                    finish();
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    private void saveNote() {
+    private void openSaveWarningDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Do you want to save changes?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        updateNote();
+                        exitIntent();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if(dialogInterface != null){
+                            dialogInterface.dismiss();
+                            finish();
+                        }
+                    }
+                })
+                .create()
+                .show();
+    }
+
+    private void exitIntent(){
+        String title = noteTitleEdit.getText().toString();
+        String content = noteContentEdit.getHtml();
+
+        if(title.trim().length() == 0){
+            title = "untitled";
+        }
+
+        //after updating the note in firestore we send the result to the calling activity
+        Intent intent = new Intent();
+        intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_TITLE, title);
+        intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT, content);
+        setResult(NoteViewActivity.NOTE_EDIT_REQUEST_CODE, intent);
+        finish();
+    }
+
+    private void updateNote() {
+        String title = noteTitleEdit.getText().toString();
+        String content = noteContentEdit.getHtml();
+
+        if(title.trim().length() == 0){
+            title = "untitled";
+        }
+
+        //update note in firestore
+        firestoreRepository.updateNote(notebookId, notebookContentId, title, content);
+    }
+
+
+    private void createNote() {
         String title = noteTitleEdit.getText().toString();
         String content = noteContentEdit.getHtml();
 
         //if nothing is entered we don't want to save the note
-        if(title.trim().length() == 0 && content.trim().length() == 0){
+        if(title.trim().length() == 0 && (content.equalsIgnoreCase("<html><body></body></html>")
+                || content.equalsIgnoreCase("<html><body><br></body></html>")
+                || content.equalsIgnoreCase("<html><body><br><br></body></html>"))){
             return;
         }
 
@@ -158,15 +253,21 @@ public class NoteEditActivity extends AppCompatActivity {
             title = "untitled";
         }
 
+        //create a new note in firestore
         firestoreRepository.createNewNote(notebookId, notebookColor, title, content);
     }
 
-    //todo: on back pressed: save note or UPDATE NOTE
+    //todo: on back pressed: create note or UPDATE NOTE
     @Override
-    protected void onDestroy() {
-        if(!saved){
-            saveNote();
+    public void onBackPressed() {
+        if(fromNoteViewActivity){
+            if(changesMade){
+                openSaveWarningDialog();
+            }
         }
-        super.onDestroy();
+        else{
+            createNote();
+            finish();
+        }
     }
 }

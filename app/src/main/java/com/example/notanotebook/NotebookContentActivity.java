@@ -136,7 +136,7 @@ public class NotebookContentActivity extends AppCompatActivity implements Notebo
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 adapter.deleteNotebookContent(viewHolder.getAdapterPosition());
-                firestoreRepository.notebookRef.document(notebookId).update(FirestoreRepository.CONTENTS_FIELD, FieldValue.increment(-1));
+                firestoreRepository.decreaseNotebookContentCount(notebookId);
             }
         }).attachToRecyclerView(recyclerView);
 
@@ -159,6 +159,7 @@ public class NotebookContentActivity extends AppCompatActivity implements Notebo
     //done: onclicklistener for createNote button, opens NoteEditActivity
     public void createNote(View view){
         Intent intent = new Intent(this, NoteEditActivity.class);
+        intent.putExtra(NotebookActivity.EXTRA_FROM_VIEW_ACTIVITY, false);
         intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_ID, notebookId);
         intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_COLOR, notebookColor);
         startActivity(intent);

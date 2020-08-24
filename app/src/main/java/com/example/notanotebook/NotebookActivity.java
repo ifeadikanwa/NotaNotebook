@@ -27,8 +27,7 @@ public class NotebookActivity extends AppCompatActivity implements NotebookCusto
     public static final String EXTRA_NOTEBOOK_CONTENT_ID = "com.example.notanotebook.EXTRA_NOTEBOOK_CONTENT_ID";
     public static final String EXTRA_NOTEBOOK_CONTENT_TITLE = "com.example.notanotebook.EXTRA_NOTEBOOK_CONTENT_TITLE";
     public static final String EXTRA_NOTEBOOK_CONTENT = "com.example.notanotebook.EXTRA_NOTEBOOK_CONTENT";
-
-
+    public static final String EXTRA_FROM_VIEW_ACTIVITY = "com.example.notanotebook.EXTRA_FROM_VIEW_ACTIVITY";
     private NotebookViewModel notebookViewModel;
     private RecyclerView recyclerView;
     private NotebookAdapter adapter;
