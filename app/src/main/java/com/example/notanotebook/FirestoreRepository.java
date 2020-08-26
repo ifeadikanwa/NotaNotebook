@@ -29,9 +29,9 @@ public class FirestoreRepository {
     public static final String CONTENTS_FIELD = "contents";
     public static final String DATE_FIELD = "latestUpdateTime";
     public static final String COLOR_FIELD = "color";
-    public static final String PRIORITY_FIELD = "priority";
     public static final String TITLE_FIELD = "title";
     public static final String CHECKED_FIELD = "checked";
+    public static final String PINNED_FIELD = "pinned";
     public static final String NOTE_CONTENT_FIELD = "noteContent";
     public static final String CHECKLIST_ITEM_FIELD = "item";
     public static final String CHECKLIST_DOC_ID_FIELD = "item_id";
@@ -113,7 +113,7 @@ public class FirestoreRepository {
         DocumentReference notebookContentDocRef = notebookRef.document(notebookId)
                 .collection(NOTEBOOK_CONTENT_COLLECTION).document();
 
-        NotebookContent content = new NotebookContent(notebookId,notebookContentDocRef.getId(), title, color, 0,null,null,true);
+        NotebookContent content = new NotebookContent(notebookId,notebookContentDocRef.getId(), title, color, null,null,true, false);
         content.setNoteContent(noteContent);
 
         notebookContentDocRef.set(content)
@@ -140,7 +140,7 @@ public class FirestoreRepository {
 
         String docId = notebookContentDocRef.getId();
 
-        NotebookContent content = new NotebookContent(notebookId, docId, title, color, 0,null,null,false);
+        NotebookContent content = new NotebookContent(notebookId, docId, title, color, null,null,false, false);
 
         notebookContentDocRef.set(content)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -248,6 +248,13 @@ public class FirestoreRepository {
                 .collection(NOTEBOOK_CONTENT_COLLECTION)
                 .document(notebookContentId)
                 .update(DATE_FIELD, FieldValue.serverTimestamp());
+    }
+
+    void updatePinnedStatus(String notebookId, String notebookContentId, boolean pinned){
+        notebookRef.document(notebookId)
+                .collection(NOTEBOOK_CONTENT_COLLECTION)
+                .document(notebookContentId)
+                .update(PINNED_FIELD, pinned);
     }
 
     void deleteChecklist(DocumentReference documentReference){

@@ -35,6 +35,13 @@ public class NotebookContentAdapter extends FirestoreRecyclerAdapter<NotebookCon
         else{
             holder.contentTypeImage.setImageResource(R.drawable.ic_baseline_check);
         }
+
+        if(model.isPinned()){
+            holder.pinnedImage.setImageResource(R.drawable.ic_pinned_notebook_content);
+        }
+        else{
+            holder.pinnedImage.setImageResource(0);
+        }
     }
 
     @NonNull
@@ -48,12 +55,14 @@ public class NotebookContentAdapter extends FirestoreRecyclerAdapter<NotebookCon
         TextView notebookContentTitle;
         ImageView contentTypeImage;
         CardView imageCard;
+        ImageView pinnedImage;
 
         public NotebookContentHolder(@NonNull View itemView) {
             super(itemView);
             notebookContentTitle = itemView.findViewById(R.id.notebookContentTitle);
             contentTypeImage = itemView.findViewById(R.id.contentTypeImg);
             imageCard = itemView.findViewById(R.id.imageCardView);
+            pinnedImage = itemView.findViewById(R.id.pinnedImageView);
 
             //we are going to set onclicklistener on the cardview
             // and then send it to the activity displaying the card to decide what happens on click.

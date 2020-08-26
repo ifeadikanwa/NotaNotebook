@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -31,7 +32,9 @@ public class NoteViewActivity extends AppCompatActivity {
     String notebookContentId;
     String notebookContentTitle;
     String notebookContent;
+    boolean pinned;
 
+    Menu activityMenu;
     TextInputEditText notebookTitleView;
     TextInputEditText noteTitleView;
     AREditText noteContentView;
@@ -62,11 +65,18 @@ public class NoteViewActivity extends AppCompatActivity {
         notebookContentId = intent.getStringExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_ID);
         notebookContentTitle = intent.getStringExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_TITLE);
         notebookContent = intent.getStringExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT);
+        pinned = intent.getBooleanExtra(NotebookActivity.EXTRA_PINNED_STATUS, false);
 
         firestoreRepository = FirestoreRepository.getInstance();
         notebookTitleView = findViewById(R.id.notebook_titleView);
         noteTitleView = findViewById(R.id.note_titleView);
         noteContentView = findViewById(R.id.note_content_view);
+
+        noteDocRef = firestoreRepository.notebookRef
+                .document(notebookId)
+                .collection(FirestoreRepository.NOTEBOOK_CONTENT_COLLECTION)
+                .document(notebookContentId);
+
 
         //make the edit text views unresponsive to keyboard events
         noteTitleView.setKeyListener(null);
@@ -78,16 +88,33 @@ public class NoteViewActivity extends AppCompatActivity {
 
         noteContentView.fromHtml(notebookContent);
 
-        noteDocRef = firestoreRepository.notebookRef
-                .document(notebookId)
-                .collection(FirestoreRepository.NOTEBOOK_CONTENT_COLLECTION)
-                .document(notebookContentId);
+
+    }
+
+
+    private void setPinnedIcon(boolean pinned, Menu menu){
+        //get the pin menu item and set icon based on pinned status in firestore
+        MenuItem menuItem = menu.findItem(R.id.pin_note);
+        if(pinned){
+            menuItem.setIcon(R.drawable.ic_pinned);
+        }
+        else{
+            menuItem.setIcon(R.drawable.ic_not_pinned);
+        }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        //save the menu reference to global menu variable
+        activityMenu = menu;
+
+        //inflate the activity's menu
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_note_view, menu);
+
+        //on creation of menu we want to set pin icon to reflect current pin status
+        setPinnedIcon(pinned, menu);
+
         return true;
     }
 
@@ -99,7 +126,7 @@ public class NoteViewActivity extends AppCompatActivity {
                 showDeleteWarningDialog();
                 return true;
             case R.id.edit_note:
-                //todo: open note Edit activity and current note content
+                //done: open note Edit activity and current note content
                 openNoteEditActivity();
                 return true;
             case R.id.note_info:
@@ -108,7 +135,8 @@ public class NoteViewActivity extends AppCompatActivity {
                 getNoteInfo();
                 return true;
             case R.id.pin_note:
-                //todo: pin note or unpin note and change the icon too
+                //done: pin note or unpin note and change the icon too
+                pinNoteAction();
                 return true;
             case android.R.id.home:
                 //done: return to notebook content activity
@@ -117,6 +145,15 @@ public class NoteViewActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void pinNoteAction() {
+        //make pinned equal to the opposite of its current value
+        pinned = !pinned;
+        //update pinned status in firestore
+        firestoreRepository.updatePinnedStatus(notebookId, notebookContentId, pinned);
+        //update pinned icon
+        setPinnedIcon(pinned, activityMenu);
     }
 
     private void openNoteEditActivity() {
@@ -134,18 +171,16 @@ public class NoteViewActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if(requestCode == NOTE_EDIT_REQUEST_CODE){
-            if(data == null){
-                return;
+            if(data != null){
+                //done: update the variables and ui
+                notebookContentTitle = data.getStringExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_TITLE);
+                notebookContent = data.getStringExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT);
+
+                noteTitleView.setText(notebookContentTitle);
+
+                noteContentView.setText("");
+                noteContentView.fromHtml(notebookContent);
             }
-
-            //todo: update the variables and ui
-            notebookContentTitle = data.getStringExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_TITLE);
-            notebookContent = data.getStringExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT);
-
-            noteTitleView.setText(notebookContentTitle);
-
-            noteContentView.setText("");
-            noteContentView.fromHtml(notebookContent);
         }
     }
 
@@ -160,7 +195,7 @@ public class NoteViewActivity extends AppCompatActivity {
                         Date modified = note.getLatestUpdateTime();
 
                         //pattern is:  Tue, 13 May 2011 14:23
-                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("E, dd MMM yyyy HH:mm");
+                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm E, dd MMM yyyy");
 
                         String creationStr = simpleDateFormat.format(creation);
                         String modifiedStr = simpleDateFormat.format(modified);
@@ -171,6 +206,23 @@ public class NoteViewActivity extends AppCompatActivity {
                     }
                 });
 
+    }
+
+
+    private void showNoteInfoDialog(String dialogMessage){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Note Information")
+                .setMessage(dialogMessage)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if(dialogInterface != null){
+                            dialogInterface.dismiss();
+                        }
+                    }
+                })
+                .create()
+                .show();
     }
 
     private void showDeleteWarningDialog(){
@@ -197,19 +249,5 @@ public class NoteViewActivity extends AppCompatActivity {
                 .show();
     }
 
-    private void showNoteInfoDialog(String dialogMessage){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Note Information")
-                .setMessage(dialogMessage)
-                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        if(dialogInterface != null){
-                            dialogInterface.dismiss();
-                        }
-                    }
-                })
-                .create()
-                .show();
-    }
+
 }

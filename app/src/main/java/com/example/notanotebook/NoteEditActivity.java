@@ -159,6 +159,7 @@ public class NoteEditActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.done_button:
+                //save, no questions asked
                 if(fromNoteViewActivity){
                     updateNote();
                     exitIntent();
@@ -168,18 +169,13 @@ public class NoteEditActivity extends AppCompatActivity {
                     finish();
                 }
                 return true;
+
             case android.R.id.home:
-                //todo: create note or UPDATE NOTE
-                if(fromNoteViewActivity){
-                    if(changesMade){
-                        openSaveWarningDialog();
-                    }
-                }
-                else{
-                    createNote();
-                    finish();
-                }
+                //performs the same actions in onBackPressed
+                //done: create note or UPDATE NOTE
+                onBackPressed();
                 return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -188,14 +184,14 @@ public class NoteEditActivity extends AppCompatActivity {
     private void openSaveWarningDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Do you want to save changes?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                .setPositiveButton("save", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         updateNote();
                         exitIntent();
                     }
                 })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                .setNegativeButton("discard", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         if(dialogInterface != null){
@@ -208,6 +204,7 @@ public class NoteEditActivity extends AppCompatActivity {
                 .show();
     }
 
+    //send results to calling activity and exit NoteEditActivity
     private void exitIntent(){
         String title = noteTitleEdit.getText().toString();
         String content = noteContentEdit.getHtml();
@@ -216,7 +213,7 @@ public class NoteEditActivity extends AppCompatActivity {
             title = "untitled";
         }
 
-        //after updating the note in firestore we send the result to the calling activity
+        //we send the result to the calling activity
         Intent intent = new Intent();
         intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_TITLE, title);
         intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT, content);
@@ -224,6 +221,7 @@ public class NoteEditActivity extends AppCompatActivity {
         finish();
     }
 
+    //update note in firestore
     private void updateNote() {
         String title = noteTitleEdit.getText().toString();
         String content = noteContentEdit.getHtml();
@@ -257,12 +255,16 @@ public class NoteEditActivity extends AppCompatActivity {
         firestoreRepository.createNewNote(notebookId, notebookColor, title, content);
     }
 
-    //todo: on back pressed: create note or UPDATE NOTE
+    //ask if they want to save update but save new notes no questions asked
+    //done: on back pressed: create note or UPDATE NOTE
     @Override
     public void onBackPressed() {
         if(fromNoteViewActivity){
             if(changesMade){
                 openSaveWarningDialog();
+            }
+            else {
+                finish();
             }
         }
         else{

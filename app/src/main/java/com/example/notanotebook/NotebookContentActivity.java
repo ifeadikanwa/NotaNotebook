@@ -78,7 +78,7 @@ public class NotebookContentActivity extends AppCompatActivity implements Notebo
         Query query = firestoreRepository.notebookRef
                 .document(notebookId)
                 .collection(FirestoreRepository.NOTEBOOK_CONTENT_COLLECTION)
-                .orderBy(FirestoreRepository.PRIORITY_FIELD, Query.Direction.DESCENDING)
+                .orderBy(FirestoreRepository.PINNED_FIELD, Query.Direction.DESCENDING)
                 .orderBy(FirestoreRepository.DATE_FIELD, Query.Direction.DESCENDING);
 
         FirestoreRecyclerOptions<NotebookContent> options = new FirestoreRecyclerOptions.Builder<NotebookContent>()
@@ -111,6 +111,7 @@ public class NotebookContentActivity extends AppCompatActivity implements Notebo
                     intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_ID, notebookContent.getNotebookContentId());
                     intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_TITLE, notebookContent.getTitle());
                     intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT, notebookContent.getNoteContent());
+                    intent.putExtra(NotebookActivity.EXTRA_PINNED_STATUS, notebookContent.isPinned());
                     startActivity(intent);
                 }
                 else{

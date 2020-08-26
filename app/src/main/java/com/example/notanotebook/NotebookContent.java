@@ -10,25 +10,25 @@ public class NotebookContent {
     private String notebookContentId;
     private String title;
     private int color;
-    private int priority;
     @ServerTimestamp private Date createdTime;
     @ServerTimestamp private Date latestUpdateTime;
     private boolean isNote;
+    private boolean pinned;
     private String noteContent;
     private String checklistContent;
 
     public NotebookContent() {
     }
 
-    public NotebookContent(String notebookId, String notebookContentId, String title, int color, int priority, Date createdTime, Date latestUpdateTime, boolean isNote) {
+    public NotebookContent(String notebookId, String notebookContentId, String title, int color, Date createdTime, Date latestUpdateTime, boolean isNote, boolean pinned) {
         this.notebookId = notebookId;
         this.notebookContentId = notebookContentId;
         this.title = title;
         this.color = color;
-        this.priority = priority;
         this.createdTime = createdTime;
         this.latestUpdateTime = latestUpdateTime;
         this.isNote = isNote;
+        this.pinned = pinned;
     }
 
     public String getNotebookId() {
@@ -75,20 +75,20 @@ public class NotebookContent {
         this.latestUpdateTime = latestUpdateTime;
     }
 
-    public int getPriority() {
-        return priority;
-    }
-
-    public void setPriority(int priority) {
-        this.priority = priority;
-    }
-
     public boolean isNote() {
         return isNote;
     }
 
     public void setNote(boolean note) {
         isNote = note;
+    }
+
+    public boolean isPinned() {
+        return pinned;
+    }
+
+    public void setPinned(boolean pinned) {
+        this.pinned = pinned;
     }
 
     public String getNoteContent() {
