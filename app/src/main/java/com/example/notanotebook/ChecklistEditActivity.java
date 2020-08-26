@@ -25,11 +25,15 @@ public class ChecklistEditActivity extends AppCompatActivity implements Checklis
     private String notebookId;
     private String notebookContentId;
     private String notebookContentTitle;
+    boolean pinned;
+    private Menu activityMenu;
     FirestoreRepository firestoreRepository;
     RecyclerView recyclerView;
     ChecklistAdapter adapter;
     ImageButton add_item_button;
     TextInputEditText item_edit_text;
+    ImageButton edit_title;
+    TextInputEditText titleView;
 
 
     @Override
@@ -42,18 +46,35 @@ public class ChecklistEditActivity extends AppCompatActivity implements Checklis
             getWindow().setStatusBarColor(Color.WHITE);
         }
 
+        setTitle("");
+
         setContentView(R.layout.activity_checklist_edit);
 
         Intent intent = getIntent();
         notebookId = intent.getStringExtra(NotebookActivity.EXTRA_NOTEBOOK_ID);
         notebookContentId = intent.getStringExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_ID);
         notebookContentTitle = intent.getStringExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_TITLE);
+        pinned = intent.getBooleanExtra(NotebookActivity.EXTRA_PINNED_STATUS, false);
 
-        setTitle(notebookContentTitle);
 
         firestoreRepository = FirestoreRepository.getInstance();
         add_item_button = findViewById(R.id.add_checklist_entry);
         item_edit_text = findViewById(R.id.checklist_edittext);
+        edit_title = findViewById(R.id.edit_checklist_title);
+        titleView = findViewById(R.id.checklist_title_view);
+
+        titleView.setKeyListener(null);
+
+        titleView.setText(notebookContentTitle);
+
+        edit_title.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //done: open custom dialog to edit title, update action bar and database
+                ChecklistCustomDialog checklistCustomDialog = new ChecklistCustomDialog(notebookContentTitle);
+                checklistCustomDialog.show(getSupportFragmentManager(), "Edit Title");
+            }
+        });
 
         setupRecyclerView();
     }
@@ -127,8 +148,13 @@ public class ChecklistEditActivity extends AppCompatActivity implements Checklis
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        //get an instance of activity's menu and save to global variable
+        activityMenu = menu;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_checklist_edit, menu);
+
+        //set correct pin icon on menu creation
+        setPinnedIcon(pinned, menu);
         return true;
     }
 
@@ -137,10 +163,9 @@ public class ChecklistEditActivity extends AppCompatActivity implements Checklis
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch(item.getItemId()){
-            case R.id.edit_checklist_title:
-                //done: open custom dialog to edit title, update action bar and database
-                ChecklistCustomDialog checklistCustomDialog = new ChecklistCustomDialog(notebookContentTitle);
-                checklistCustomDialog.show(getSupportFragmentManager(), "Edit Title");
+            case R.id.pin_checklist:
+                //todo: pin or unpin on click
+                pinChecklistAction();
                 return true;
             case R.id.done_button:
             case android.R.id.home:
@@ -150,6 +175,29 @@ public class ChecklistEditActivity extends AppCompatActivity implements Checklis
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    //pin or unpin checklist
+    private void pinChecklistAction() {
+        //make pinned equal to the opposite of its current value
+        pinned = !pinned;
+        //update pinned status in firestore
+        firestoreRepository.updatePinnedStatus(notebookId, notebookContentId, pinned);
+        //update pinned icon
+        setPinnedIcon(pinned, activityMenu);
+    }
+
+    //set pin icon depending on current pinned status of checklist
+    private void setPinnedIcon(boolean pinned, Menu menu){
+        //get the pin menu item and set icon based on pinned status in firestore
+        MenuItem menuItem = menu.findItem(R.id.pin_checklist);
+        if(pinned){
+            menuItem.setIcon(R.drawable.ic_pinned);
+        }
+        else{
+            menuItem.setIcon(R.drawable.ic_not_pinned);
+        }
+    }
+
 
     @Override
     protected void onStart() {
@@ -170,7 +218,7 @@ public class ChecklistEditActivity extends AppCompatActivity implements Checklis
 
         notebookContentTitle = Title;
 
-        setTitle(notebookContentTitle);
+        titleView.setText(notebookContentTitle);
     }
 
 

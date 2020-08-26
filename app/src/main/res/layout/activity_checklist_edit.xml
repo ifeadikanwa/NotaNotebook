@@ -8,6 +8,35 @@
     android:padding="6dp"
     tools:context=".ChecklistEditActivity">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/checklist_title_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:ellipsize="end"
+            android:inputType="text"
+            android:maxLines="1"
+            android:text="this is a checklist"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/edit_checklist_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_gravity="center"
+            android:background="@drawable/ic_notebook_edit" />
+    </LinearLayout>
+
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/checklist_recyclerview"
         android:layout_width="match_parent"
@@ -15,7 +44,8 @@
         android:layout_marginTop="3dp"
         android:layout_marginBottom="3dp"
         android:layout_weight="2"
-        tools:listitem="@layout/checklist_item_view"/>
+        android:scrollbars="vertical"
+        tools:listitem="@layout/checklist_item_view" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -24,10 +54,10 @@
 
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:theme="@style/TextInputLayoutAppearance"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
+            android:theme="@style/TextInputLayoutAppearance"
             app:boxStrokeColor="@color/black"
             app:hintEnabled="false">
 
@@ -44,7 +74,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/ic_outline_add_circle"
-            android:onClick="add_item"/>
+            android:onClick="add_item" />
     </LinearLayout>
 
 

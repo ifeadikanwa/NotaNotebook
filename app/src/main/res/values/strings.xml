@@ -8,4 +8,7 @@
     <string name="short_app_name">Nota</string>
     <string name="enter_item_text">Add task</string>
     <string name="archive">Archive</string>
+    <string name="pin_checklist">Pin Checklist</string>
+    <string name="edit_title">Edit Title</string>
+    <string name="title">Title</string>
 </resources>

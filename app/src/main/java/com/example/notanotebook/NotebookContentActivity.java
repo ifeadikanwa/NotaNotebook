@@ -123,6 +123,7 @@ public class NotebookContentActivity extends AppCompatActivity implements Notebo
                     intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_ID, notebookId);
                     intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_ID, notebookContent.getNotebookContentId());
                     intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_TITLE, notebookContent.getTitle());
+                    intent.putExtra(NotebookActivity.EXTRA_PINNED_STATUS, notebookContent.isPinned());
                     startActivity(intent);
                 }
             }
@@ -255,6 +256,7 @@ public class NotebookContentActivity extends AppCompatActivity implements Notebo
         intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_ID, notebookId);
         intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_ID, contentDocId);
         intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_TITLE, Title);
+        intent.putExtra(NotebookActivity.EXTRA_PINNED_STATUS, false);
         startActivity(intent);
     }
 }
