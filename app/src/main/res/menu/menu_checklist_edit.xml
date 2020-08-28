@@ -2,6 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <item android:id="@+id/delete_checklist"
+        android:title="Delete Checklist"
+        android:icon="@drawable/ic_delete"
+        app:showAsAction="always"/>
+
     <item android:id="@+id/pin_checklist"
         android:title="@string/pin_checklist"
         android:icon="@drawable/ic_not_pinned"

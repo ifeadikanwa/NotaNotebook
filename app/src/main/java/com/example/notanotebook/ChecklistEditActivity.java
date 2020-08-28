@@ -21,6 +21,7 @@ import android.widget.ImageButton;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 
@@ -32,6 +33,7 @@ public class ChecklistEditActivity extends AppCompatActivity implements Checklis
     boolean pinned;
     boolean locked;
     private Menu activityMenu;
+    DocumentReference ChecklistDocRef;
     FirestoreRepository firestoreRepository;
     RecyclerView recyclerView;
     ChecklistAdapter adapter;
@@ -81,6 +83,11 @@ public class ChecklistEditActivity extends AppCompatActivity implements Checklis
                 checklistCustomDialog.show(getSupportFragmentManager(), "Edit Title");
             }
         });
+
+        ChecklistDocRef = firestoreRepository.notebookRef
+                .document(notebookId)
+                .collection(FirestoreRepository.NOTEBOOK_CONTENT_COLLECTION)
+                .document(notebookContentId);
 
         setupRecyclerView();
     }
@@ -175,8 +182,12 @@ public class ChecklistEditActivity extends AppCompatActivity implements Checklis
                 pinChecklistAction();
                 return true;
             case R.id.lock_checklist:
-                //todo: lock or unlock checklist
+                //done: lock or unlock checklist
                 lockChecklistAction();
+                return true;
+            case R.id.delete_checklist:
+                //todo: delete checklist
+                showDeleteWarningDialog();
                 return true;
             case R.id.done_button:
             case android.R.id.home:
@@ -270,6 +281,30 @@ public class ChecklistEditActivity extends AppCompatActivity implements Checklis
         else{
             menuItem.setIcon(R.drawable.ic_unlocked);
         }
+    }
+
+    private void showDeleteWarningDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setMessage("Are you sure you want to delete?")
+                .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        firestoreRepository.deleteNote(ChecklistDocRef);
+                        firestoreRepository.decreaseNotebookContentCount(notebookId);
+                        finish();
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if(dialogInterface != null){
+                            dialogInterface.dismiss();
+                        }
+                    }
+                })
+                .create()
+                .show();
     }
 
 
