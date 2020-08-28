@@ -12,9 +12,10 @@ import com.beautycoder.pflockscreen.PFFLockScreenConfiguration;
 import com.beautycoder.pflockscreen.fragments.PFLockScreenFragment;
 import com.beautycoder.pflockscreen.security.PFResult;
 import com.beautycoder.pflockscreen.viewmodels.PFPinCodeViewModel;
+import com.google.android.gms.actions.NoteIntents;
 
 public class PinLockScreenActivity extends AppCompatActivity {
-    boolean from_note_view_activity;
+    boolean from_view_activity;
 
     String notebookId;
     String notebookName;
@@ -31,9 +32,9 @@ public class PinLockScreenActivity extends AppCompatActivity {
         setContentView(R.layout.activity_pin_lock_screen);
 
         Intent intent = getIntent();
-        from_note_view_activity = intent.getBooleanExtra(NotebookActivity.EXTRA_FROM_NOTE_VIEW_ACTIVITY,false);
+        from_view_activity = intent.getBooleanExtra(NotebookActivity.EXTRA_FROM_VIEW_ACTIVITY,false);
 
-        if(!from_note_view_activity){
+        if(!from_view_activity){
             notebookId = intent.getStringExtra(NotebookActivity.EXTRA_NOTEBOOK_ID);
             notebookName = intent.getStringExtra(NotebookActivity.EXTRA_NOTEBOOK_NAME);
             notebookContentId = intent.getStringExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_ID);
@@ -70,7 +71,7 @@ public class PinLockScreenActivity extends AppCompatActivity {
     //this builds the lock screen based on if user already created a pin or not
     private void showLockScreenFragment(boolean isPinExist) {
         final PFFLockScreenConfiguration.Builder builder = new PFFLockScreenConfiguration.Builder(this)
-                .setTitle(isPinExist ? "Unlock with your pin code or fingerprint" : "Create Pin")
+                .setTitle(isPinExist ? "Enter your pin code or fingerprint" : "Create Pin")
                 .setCodeLength(4)
 //                .setLeftButton("Can't remember")
                 .setNewCodeValidation(true)
@@ -122,26 +123,16 @@ public class PinLockScreenActivity extends AppCompatActivity {
                     //save the pin code in Shared Preference
                     PreferencesSettings.savePinToPref(PinLockScreenActivity.this, encodedCode);
 
-                    if(from_note_view_activity){
-                        //send result back to calling activity
-                        Intent intent = new Intent();
-                        setResult(RESULT_OK);
-                        finish();
+                    if(from_view_activity){
+                        ViewActivityIntent();
                     }
                     //if intent is not from view activity and is a note send intent to note view activity
                     else if(note){
-                        Intent intent = new Intent(PinLockScreenActivity.this, NoteViewActivity.class);
-                        intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_ID, notebookId);
-                        intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_NAME, notebookName);
-                        intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_ID, notebookContentId);
-                        intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_TITLE, notebookContentTitle);
-                        intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT, notebookContent);
-                        intent.putExtra(NotebookActivity.EXTRA_PINNED_STATUS, pinned);
-                        intent.putExtra(NotebookActivity.EXTRA_LOCKED_STATUS, locked);
-                        startActivity(intent);
+                        NoteActivityIntent();
                     }
+                    //if intent is not from view activity and is a checklist send intent to checklist edit activity
                     else {
-
+                        ChecklistActivityIntent();
                     }
 
                 }
@@ -161,28 +152,16 @@ public class PinLockScreenActivity extends AppCompatActivity {
                     Toast.makeText(PinLockScreenActivity.this, "Pin successful", Toast.LENGTH_SHORT).show();
 
                     //if intent is from view activity we want to send results back
-                    if(from_note_view_activity){
-                        //send result back to calling activity
-                        Intent intent = new Intent();
-                        setResult(RESULT_OK);
-                        finish();
+                    if(from_view_activity){
+                        ViewActivityIntent();
                     }
                     //if intent is not from view activity and is a note send intent to note view activity
                     else if(note){
-                        Intent intent = new Intent(PinLockScreenActivity.this, NoteViewActivity.class);
-                        intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_ID, notebookId);
-                        intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_NAME, notebookName);
-                        intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_ID, notebookContentId);
-                        intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_TITLE, notebookContentTitle);
-                        intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT, notebookContent);
-                        intent.putExtra(NotebookActivity.EXTRA_PINNED_STATUS, pinned);
-                        intent.putExtra(NotebookActivity.EXTRA_LOCKED_STATUS, locked);
-                        startActivity(intent);
+                        NoteActivityIntent();
                     }
                     else {
-
+                        ChecklistActivityIntent();
                     }
-                    showLandingActivity();
                 }
 
                 @Override
@@ -190,28 +169,16 @@ public class PinLockScreenActivity extends AppCompatActivity {
                     Toast.makeText(PinLockScreenActivity.this, "Fingerprint successful", Toast.LENGTH_SHORT).show();
 
                     //if intent is from note view activity we want to send results back
-                    if(from_note_view_activity){
-                        //send result back to calling activity
-                        Intent intent = new Intent();
-                        setResult(RESULT_OK);
-                        finish();
+                    if(from_view_activity){
+                        ViewActivityIntent();
                     }
                     //if intent is not from view activity and is a note send intent to note view activity
                     else if(note){
-                        Intent intent = new Intent(PinLockScreenActivity.this, NoteViewActivity.class);
-                        intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_ID, notebookId);
-                        intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_NAME, notebookName);
-                        intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_ID, notebookContentId);
-                        intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_TITLE, notebookContentTitle);
-                        intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT, notebookContent);
-                        intent.putExtra(NotebookActivity.EXTRA_PINNED_STATUS, pinned);
-                        intent.putExtra(NotebookActivity.EXTRA_LOCKED_STATUS, locked);
-                        startActivity(intent);
+                        NoteActivityIntent();
                     }
                     else{
-
+                        ChecklistActivityIntent();
                     }
-                    showLandingActivity();
                 }
 
                 @Override
@@ -226,10 +193,33 @@ public class PinLockScreenActivity extends AppCompatActivity {
             };
 
 
-    private void showLandingActivity() {
-//        Toast.makeText(LockScreenActivity.this, "Show Landing Activity", Toast.LENGTH_SHORT).show();
-//        Intent intent = new Intent(LockScreenActivity.this, LandingActivity.class);
-//        startActivity(intent);
+    private void ViewActivityIntent() {
+        //send result back to calling activity
+        Intent intent = new Intent();
+        setResult(RESULT_OK);
+        finish();
+    }
+
+    private void NoteActivityIntent() {
+        Intent intent = new Intent(PinLockScreenActivity.this, NoteViewActivity.class);
+        intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_ID, notebookId);
+        intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_NAME, notebookName);
+        intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_ID, notebookContentId);
+        intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_TITLE, notebookContentTitle);
+        intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT, notebookContent);
+        intent.putExtra(NotebookActivity.EXTRA_PINNED_STATUS, pinned);
+        intent.putExtra(NotebookActivity.EXTRA_LOCKED_STATUS, locked);
+        startActivity(intent);
+    }
+
+    private void ChecklistActivityIntent() {
+        Intent intent = new Intent(PinLockScreenActivity.this, ChecklistEditActivity.class);
+        intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_ID, notebookId);
+        intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_ID, notebookContentId);
+        intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_TITLE, notebookContentTitle);
+        intent.putExtra(NotebookActivity.EXTRA_PINNED_STATUS, pinned);
+        intent.putExtra(NotebookActivity.EXTRA_LOCKED_STATUS, locked);
+        startActivity(intent);
     }
 
 }

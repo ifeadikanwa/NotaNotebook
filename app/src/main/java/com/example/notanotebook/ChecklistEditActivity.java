@@ -1,11 +1,14 @@
 package com.example.notanotebook;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
@@ -22,10 +25,12 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 
 public class ChecklistEditActivity extends AppCompatActivity implements ChecklistCustomDialog.TitleDialogInterface, Checklist_Item_Dialog.TextDialogInterface {
+    private static final int LOCK_CHECKLIST_REQUEST_CODE = 333;
     private String notebookId;
     private String notebookContentId;
     private String notebookContentTitle;
     boolean pinned;
+    boolean locked;
     private Menu activityMenu;
     FirestoreRepository firestoreRepository;
     RecyclerView recyclerView;
@@ -55,6 +60,7 @@ public class ChecklistEditActivity extends AppCompatActivity implements Checklis
         notebookContentId = intent.getStringExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_ID);
         notebookContentTitle = intent.getStringExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_TITLE);
         pinned = intent.getBooleanExtra(NotebookActivity.EXTRA_PINNED_STATUS, false);
+        locked = intent.getBooleanExtra(NotebookActivity.EXTRA_LOCKED_STATUS, false);
 
 
         firestoreRepository = FirestoreRepository.getInstance();
@@ -153,8 +159,9 @@ public class ChecklistEditActivity extends AppCompatActivity implements Checklis
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_checklist_edit, menu);
 
-        //set correct pin icon on menu creation
+        //set correct pin and lock icon on menu creation
         setPinnedIcon(pinned, menu);
+        setLockedIcon(locked, menu);
         return true;
     }
 
@@ -164,8 +171,12 @@ public class ChecklistEditActivity extends AppCompatActivity implements Checklis
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch(item.getItemId()){
             case R.id.pin_checklist:
-                //todo: pin or unpin on click
+                //done: pin or unpin on click
                 pinChecklistAction();
+                return true;
+            case R.id.lock_checklist:
+                //todo: lock or unlock checklist
+                lockChecklistAction();
                 return true;
             case R.id.done_button:
             case android.R.id.home:
@@ -174,6 +185,45 @@ public class ChecklistEditActivity extends AppCompatActivity implements Checklis
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    //lock or unlock checklist
+    private void lockChecklistAction() {
+        if(locked){
+            //if note is locked we want to UNLOCK
+            showUnlockWarningDialog();
+        }
+        else{
+            //if note is unlocked we want to LOCK
+            Intent intent = new Intent(ChecklistEditActivity.this, PinLockScreenActivity.class);
+            intent.putExtra(NotebookActivity.EXTRA_FROM_VIEW_ACTIVITY, true);
+            startActivityForResult(intent, LOCK_CHECKLIST_REQUEST_CODE);
+        }
+    }
+
+    //alert dialog for unlocking checklist
+    private void showUnlockWarningDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setMessage("Are you sure you want to remove lock?")
+                .setPositiveButton("Remove", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        locked = false;
+                        firestoreRepository.updateLockedStatus(notebookId, notebookContentId, false);
+                        setLockedIcon(locked, activityMenu);
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if(dialogInterface != null){
+                            dialogInterface.dismiss();
+                        }
+                    }
+                })
+                .create()
+                .show();
     }
 
     //pin or unpin checklist
@@ -186,6 +236,18 @@ public class ChecklistEditActivity extends AppCompatActivity implements Checklis
         setPinnedIcon(pinned, activityMenu);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == LOCK_CHECKLIST_REQUEST_CODE && resultCode == RESULT_OK){
+            //done: update global variable, firestore and icon
+            locked = true;
+            firestoreRepository.updateLockedStatus(notebookId, notebookContentId, locked);
+            setLockedIcon(locked, activityMenu);
+        }
+    }
+
     //set pin icon depending on current pinned status of checklist
     private void setPinnedIcon(boolean pinned, Menu menu){
         //get the pin menu item and set icon based on pinned status in firestore
@@ -195,6 +257,18 @@ public class ChecklistEditActivity extends AppCompatActivity implements Checklis
         }
         else{
             menuItem.setIcon(R.drawable.ic_not_pinned);
+        }
+    }
+
+    //set pin icon depending on current locked status of checklist
+    private void setLockedIcon(boolean locked, Menu menu){
+        //get the lock menu item and set icon based on pinned status in firestore
+        MenuItem menuItem = menu.findItem(R.id.lock_checklist);
+        if(locked){
+            menuItem.setIcon(R.drawable.ic_locked);
+        }
+        else{
+            menuItem.setIcon(R.drawable.ic_unlocked);
         }
     }
 

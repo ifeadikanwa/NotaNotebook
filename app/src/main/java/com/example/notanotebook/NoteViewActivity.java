@@ -125,7 +125,7 @@ public class NoteViewActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_note_view, menu);
 
-        //on creation of menu we want to set pin icon to reflect current pin status
+        //on creation of menu we want to set pin and locked icon to reflect current pin status
         setPinnedIcon(pinned, menu);
         setLockedIcon(locked, menu);
 
@@ -153,7 +153,7 @@ public class NoteViewActivity extends AppCompatActivity {
                 pinNoteAction();
                 return true;
             case R.id.lock_note:
-                //todo: lock or unlock note on click
+                //done: lock or unlock note on click
                 lockNoteAction();
                 return true;
             case android.R.id.home:
@@ -173,7 +173,7 @@ public class NoteViewActivity extends AppCompatActivity {
         else{
             //if note is unlocked we want to LOCK
             Intent intent = new Intent(NoteViewActivity.this, PinLockScreenActivity.class);
-            intent.putExtra(NotebookActivity.EXTRA_FROM_NOTE_VIEW_ACTIVITY, true);
+            intent.putExtra(NotebookActivity.EXTRA_FROM_VIEW_ACTIVITY, true);
             startActivityForResult(intent, LOCK_NOTE_REQUEST_CODE);
         }
     }
@@ -189,7 +189,7 @@ public class NoteViewActivity extends AppCompatActivity {
 
     private void openNoteEditActivity() {
         Intent intent = new Intent(this, NoteEditActivity.class);
-        intent.putExtra(NotebookActivity.EXTRA_FROM_NOTE_VIEW_ACTIVITY, true);
+        intent.putExtra(NotebookActivity.EXTRA_FROM_VIEW_ACTIVITY, true);
         intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_ID, notebookId);
         intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_ID, notebookContentId);
         intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_TITLE, notebookContentTitle);
@@ -215,7 +215,7 @@ public class NoteViewActivity extends AppCompatActivity {
         }
 
         if(requestCode == LOCK_NOTE_REQUEST_CODE && resultCode == RESULT_OK){
-            //todo: update global variable, firestore and icon
+            //done: update global variable, firestore and icon
             locked = true;
             firestoreRepository.updateLockedStatus(notebookId, notebookContentId, locked);
             setLockedIcon(locked, activityMenu);

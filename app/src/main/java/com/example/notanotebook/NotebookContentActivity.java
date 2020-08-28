@@ -119,22 +119,31 @@ public class NotebookContentActivity extends AppCompatActivity implements Notebo
                     intent.putExtra(NotebookActivity.EXTRA_PINNED_STATUS, notebookContent.isPinned());
                     intent.putExtra(NotebookActivity.EXTRA_LOCKED_STATUS, notebookContent.isLocked());
                     intent.putExtra(NotebookActivity.EXTRA_IS_NOTE, notebookContent.isNote());
-                    intent.putExtra(NotebookActivity.EXTRA_FROM_NOTE_VIEW_ACTIVITY, false);
+                    intent.putExtra(NotebookActivity.EXTRA_FROM_VIEW_ACTIVITY, false);
                     startActivity(intent);
                 }
                 else{
                     //update timestamp
                     firestoreRepository.updateNotebookContentTimestamp(notebookId, notebookContent.getNotebookContentId());
 
-                    //done: send intent to checklist edit activity
-                    Intent intent = new Intent(NotebookContentActivity.this, ChecklistEditActivity.class);
+                    Intent intent;
+
+                    if(notebookContent.isLocked()){
+                        //send intent to lockscreen activity
+                        intent = new Intent(NotebookContentActivity.this, PinLockScreenActivity.class);
+                    }
+                    else {
+                        //done: send intent to checklist edit activity
+                        intent = new Intent(NotebookContentActivity.this, ChecklistEditActivity.class);
+                    }
+
                     intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_ID, notebookId);
                     intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_ID, notebookContent.getNotebookContentId());
                     intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_TITLE, notebookContent.getTitle());
                     intent.putExtra(NotebookActivity.EXTRA_PINNED_STATUS, notebookContent.isPinned());
                     intent.putExtra(NotebookActivity.EXTRA_LOCKED_STATUS, notebookContent.isLocked());
                     intent.putExtra(NotebookActivity.EXTRA_IS_NOTE, notebookContent.isNote());
-                    intent.putExtra(NotebookActivity.EXTRA_FROM_NOTE_VIEW_ACTIVITY, false);
+                    intent.putExtra(NotebookActivity.EXTRA_FROM_VIEW_ACTIVITY, false);
                     startActivity(intent);
                 }
             }
@@ -172,7 +181,7 @@ public class NotebookContentActivity extends AppCompatActivity implements Notebo
     //done: onclicklistener for createNote button, opens NoteEditActivity
     public void createNote(View view){
         Intent intent = new Intent(this, NoteEditActivity.class);
-        intent.putExtra(NotebookActivity.EXTRA_FROM_NOTE_VIEW_ACTIVITY, false);
+        intent.putExtra(NotebookActivity.EXTRA_FROM_VIEW_ACTIVITY, false);
         intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_ID, notebookId);
         intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_COLOR, notebookColor);
         startActivity(intent);
