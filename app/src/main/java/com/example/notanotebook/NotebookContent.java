@@ -14,13 +14,14 @@ public class NotebookContent {
     @ServerTimestamp private Date latestUpdateTime;
     private boolean isNote;
     private boolean pinned;
+    private boolean locked;
     private String noteContent;
     private String checklistContent;
 
     public NotebookContent() {
     }
 
-    public NotebookContent(String notebookId, String notebookContentId, String title, int color, Date createdTime, Date latestUpdateTime, boolean isNote, boolean pinned) {
+    public NotebookContent(String notebookId, String notebookContentId, String title, int color, Date createdTime, Date latestUpdateTime, boolean isNote, boolean pinned, boolean locked) {
         this.notebookId = notebookId;
         this.notebookContentId = notebookContentId;
         this.title = title;
@@ -29,6 +30,7 @@ public class NotebookContent {
         this.latestUpdateTime = latestUpdateTime;
         this.isNote = isNote;
         this.pinned = pinned;
+        this.locked = locked;
     }
 
     public String getNotebookId() {
@@ -89,6 +91,14 @@ public class NotebookContent {
 
     public void setPinned(boolean pinned) {
         this.pinned = pinned;
+    }
+
+    public boolean isLocked() {
+        return locked;
+    }
+
+    public void setLocked(boolean locked) {
+        this.locked = locked;
     }
 
     public String getNoteContent() {

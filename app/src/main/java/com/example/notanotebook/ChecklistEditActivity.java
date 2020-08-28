@@ -211,9 +211,10 @@ public class ChecklistEditActivity extends AppCompatActivity implements Checklis
         adapter.stopListening();
     }
 
+    //this method is used to update the checklist title in firestore and the titleView
     @Override
     public void createChecklist(String Title) {
-        //done: update title in titlebar and firestore
+        //done: update title in titleView and firestore
         firestoreRepository.updateChecklistTitle(notebookId, notebookContentId, Title);
 
         notebookContentTitle = Title;

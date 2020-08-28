@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -33,6 +32,7 @@ public class NoteViewActivity extends AppCompatActivity {
     String notebookContentTitle;
     String notebookContent;
     boolean pinned;
+    boolean locked;
 
     Menu activityMenu;
     TextInputEditText notebookTitleView;
@@ -41,7 +41,8 @@ public class NoteViewActivity extends AppCompatActivity {
 
     FirestoreRepository firestoreRepository;
     DocumentReference noteDocRef;
-    public static final int NOTE_EDIT_REQUEST_CODE = 1;
+    public static final int NOTE_EDIT_REQUEST_CODE = 111;
+    public static final int LOCK_NOTE_REQUEST_CODE = 222;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +67,7 @@ public class NoteViewActivity extends AppCompatActivity {
         notebookContentTitle = intent.getStringExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_TITLE);
         notebookContent = intent.getStringExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT);
         pinned = intent.getBooleanExtra(NotebookActivity.EXTRA_PINNED_STATUS, false);
+        locked = intent.getBooleanExtra(NotebookActivity.EXTRA_LOCKED_STATUS, false);
 
         firestoreRepository = FirestoreRepository.getInstance();
         notebookTitleView = findViewById(R.id.notebook_titleView);
@@ -103,6 +105,17 @@ public class NoteViewActivity extends AppCompatActivity {
         }
     }
 
+    private void setLockedIcon(boolean locked, Menu menu){
+        //get the lock menu item and set icon based on pinned status in firestore
+        MenuItem menuItem = menu.findItem(R.id.lock_note);
+        if(locked){
+            menuItem.setIcon(R.drawable.ic_locked);
+        }
+        else{
+            menuItem.setIcon(R.drawable.ic_unlocked);
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //save the menu reference to global menu variable
@@ -114,6 +127,7 @@ public class NoteViewActivity extends AppCompatActivity {
 
         //on creation of menu we want to set pin icon to reflect current pin status
         setPinnedIcon(pinned, menu);
+        setLockedIcon(locked, menu);
 
         return true;
     }
@@ -138,12 +152,29 @@ public class NoteViewActivity extends AppCompatActivity {
                 //done: pin note or unpin note and change the icon too
                 pinNoteAction();
                 return true;
+            case R.id.lock_note:
+                //todo: lock or unlock note on click
+                lockNoteAction();
+                return true;
             case android.R.id.home:
                 //done: return to notebook content activity
                 finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void lockNoteAction() {
+        if(locked){
+            //if note is locked we want to UNLOCK
+            showUnlockWarningDialog();
+        }
+        else{
+            //if note is unlocked we want to LOCK
+            Intent intent = new Intent(NoteViewActivity.this, PinLockScreenActivity.class);
+            intent.putExtra(NotebookActivity.EXTRA_FROM_NOTE_VIEW_ACTIVITY, true);
+            startActivityForResult(intent, LOCK_NOTE_REQUEST_CODE);
         }
     }
 
@@ -158,7 +189,7 @@ public class NoteViewActivity extends AppCompatActivity {
 
     private void openNoteEditActivity() {
         Intent intent = new Intent(this, NoteEditActivity.class);
-        intent.putExtra(NotebookActivity.EXTRA_FROM_VIEW_ACTIVITY, true);
+        intent.putExtra(NotebookActivity.EXTRA_FROM_NOTE_VIEW_ACTIVITY, true);
         intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_ID, notebookId);
         intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_ID, notebookContentId);
         intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_TITLE, notebookContentTitle);
@@ -170,7 +201,7 @@ public class NoteViewActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == NOTE_EDIT_REQUEST_CODE){
+        if(requestCode == NOTE_EDIT_REQUEST_CODE && resultCode == RESULT_OK){
             if(data != null){
                 //done: update the variables and ui
                 notebookContentTitle = data.getStringExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_TITLE);
@@ -181,6 +212,13 @@ public class NoteViewActivity extends AppCompatActivity {
                 noteContentView.setText("");
                 noteContentView.fromHtml(notebookContent);
             }
+        }
+
+        if(requestCode == LOCK_NOTE_REQUEST_CODE && resultCode == RESULT_OK){
+            //todo: update global variable, firestore and icon
+            locked = true;
+            firestoreRepository.updateLockedStatus(notebookId, notebookContentId, locked);
+            setLockedIcon(locked, activityMenu);
         }
     }
 
@@ -249,5 +287,28 @@ public class NoteViewActivity extends AppCompatActivity {
                 .show();
     }
 
+    private void showUnlockWarningDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setMessage("Are you sure you want to remove lock?")
+                .setPositiveButton("Remove", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        locked = false;
+                        firestoreRepository.updateLockedStatus(notebookId, notebookContentId, false);
+                        setLockedIcon(locked, activityMenu);
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if(dialogInterface != null){
+                            dialogInterface.dismiss();
+                        }
+                    }
+                })
+                .create()
+                .show();
+    }
 
 }

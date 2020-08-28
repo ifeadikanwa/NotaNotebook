@@ -27,12 +27,13 @@ public class NotebookActivity extends AppCompatActivity implements NotebookCusto
     public static final String EXTRA_NOTEBOOK_CONTENT_ID = "com.example.notanotebook.EXTRA_NOTEBOOK_CONTENT_ID";
     public static final String EXTRA_NOTEBOOK_CONTENT_TITLE = "com.example.notanotebook.EXTRA_NOTEBOOK_CONTENT_TITLE";
     public static final String EXTRA_NOTEBOOK_CONTENT = "com.example.notanotebook.EXTRA_NOTEBOOK_CONTENT";
-    public static final String EXTRA_FROM_VIEW_ACTIVITY = "com.example.notanotebook.EXTRA_FROM_VIEW_ACTIVITY";
+    public static final String EXTRA_FROM_NOTE_VIEW_ACTIVITY = "com.example.notanotebook.EXTRA_FROM_NOTE_VIEW_ACTIVITY";
     public static final String EXTRA_PINNED_STATUS = "com.example.notanotebook.EXTRA_PINNED_STATUS";
+    public static final String EXTRA_LOCKED_STATUS = "com.example.notanotebook.EXTRA_LOCKED_STATUS";
+    public static final String EXTRA_IS_NOTE = "com.example.notanotebook.EXTRA_IS_NOTE";
     private NotebookViewModel notebookViewModel;
     private RecyclerView recyclerView;
     private NotebookAdapter adapter;
-    private FloatingActionButton add_notebook;
     ImageButton archiveButton;
     private FirestoreRepository firestoreRepository;
 
@@ -44,7 +45,7 @@ public class NotebookActivity extends AppCompatActivity implements NotebookCusto
 
         getSupportActionBar().hide();
 
-        add_notebook = findViewById(R.id.add_notebook);
+        FloatingActionButton add_notebook = findViewById(R.id.add_notebook);
         add_notebook.setOnClickListener(addNotebook);
 
         archiveButton = findViewById(R.id.archive_button);

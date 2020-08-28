@@ -7,6 +7,11 @@
         android:icon="@drawable/ic_not_pinned"
         app:showAsAction="always"/>
 
+    <item android:id="@+id/lock_checklist"
+        android:title="Lock Checklist"
+        android:icon="@drawable/ic_unlocked"
+        app:showAsAction="always"/>
+
     <item android:id="@+id/done_button"
         android:title="@string/done"
         android:icon="@drawable/ic_done"

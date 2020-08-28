@@ -42,6 +42,13 @@ public class NotebookContentAdapter extends FirestoreRecyclerAdapter<NotebookCon
         else{
             holder.pinnedImage.setImageResource(0);
         }
+
+        if(model.isLocked()){
+            holder.lockedImage.setImageResource(R.drawable.ic_locked_notebook_content);
+        }
+        else{
+            holder.lockedImage.setImageResource(0);
+        }
     }
 
     @NonNull
@@ -56,6 +63,7 @@ public class NotebookContentAdapter extends FirestoreRecyclerAdapter<NotebookCon
         ImageView contentTypeImage;
         CardView imageCard;
         ImageView pinnedImage;
+        ImageView lockedImage;
 
         public NotebookContentHolder(@NonNull View itemView) {
             super(itemView);
@@ -63,6 +71,7 @@ public class NotebookContentAdapter extends FirestoreRecyclerAdapter<NotebookCon
             contentTypeImage = itemView.findViewById(R.id.contentTypeImg);
             imageCard = itemView.findViewById(R.id.imageCardView);
             pinnedImage = itemView.findViewById(R.id.pinnedImageView);
+            lockedImage = itemView.findViewById(R.id.lockedImageView);
 
             //we are going to set onclicklistener on the cardview
             // and then send it to the activity displaying the card to decide what happens on click.

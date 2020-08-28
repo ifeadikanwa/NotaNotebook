@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -20,7 +19,6 @@ import android.widget.Toast;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
@@ -57,13 +55,11 @@ public class NotebookContentActivity extends AppCompatActivity implements Notebo
         //set the action bar title
         setTitle(notebookName);
 
-        if(notebookColor == null){
-
-        }
         //set the action bar color
         actionBar = getSupportActionBar();
         ColorDrawable colorDrawable = new ColorDrawable(Integer.parseInt(notebookColor));
         actionBar.setBackgroundDrawable(colorDrawable);
+
 
         createNote = findViewById(R.id.add_note);
         createChecklist = findViewById(R.id.add_checklist);
@@ -104,14 +100,26 @@ public class NotebookContentActivity extends AppCompatActivity implements Notebo
                     //update timestamp
                     firestoreRepository.updateNotebookContentTimestamp(notebookId, notebookContent.getNotebookContentId());
 
-                    //done: send intent to view activity
-                    Intent intent = new Intent(NotebookContentActivity.this, NoteViewActivity.class);
+                    Intent intent;
+
+                    if(notebookContent.isLocked()){
+                        //send intent to lockscreen activity
+                        intent = new Intent(NotebookContentActivity.this, PinLockScreenActivity.class);
+                    }
+                    else {
+                        //done: send intent to view activity
+                        intent = new Intent(NotebookContentActivity.this, NoteViewActivity.class);
+                    }
+
                     intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_ID, notebookId);
                     intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_NAME, notebookName);
                     intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_ID, notebookContent.getNotebookContentId());
                     intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_TITLE, notebookContent.getTitle());
                     intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT, notebookContent.getNoteContent());
                     intent.putExtra(NotebookActivity.EXTRA_PINNED_STATUS, notebookContent.isPinned());
+                    intent.putExtra(NotebookActivity.EXTRA_LOCKED_STATUS, notebookContent.isLocked());
+                    intent.putExtra(NotebookActivity.EXTRA_IS_NOTE, notebookContent.isNote());
+                    intent.putExtra(NotebookActivity.EXTRA_FROM_NOTE_VIEW_ACTIVITY, false);
                     startActivity(intent);
                 }
                 else{
@@ -124,6 +132,9 @@ public class NotebookContentActivity extends AppCompatActivity implements Notebo
                     intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_ID, notebookContent.getNotebookContentId());
                     intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_TITLE, notebookContent.getTitle());
                     intent.putExtra(NotebookActivity.EXTRA_PINNED_STATUS, notebookContent.isPinned());
+                    intent.putExtra(NotebookActivity.EXTRA_LOCKED_STATUS, notebookContent.isLocked());
+                    intent.putExtra(NotebookActivity.EXTRA_IS_NOTE, notebookContent.isNote());
+                    intent.putExtra(NotebookActivity.EXTRA_FROM_NOTE_VIEW_ACTIVITY, false);
                     startActivity(intent);
                 }
             }
@@ -161,7 +172,7 @@ public class NotebookContentActivity extends AppCompatActivity implements Notebo
     //done: onclicklistener for createNote button, opens NoteEditActivity
     public void createNote(View view){
         Intent intent = new Intent(this, NoteEditActivity.class);
-        intent.putExtra(NotebookActivity.EXTRA_FROM_VIEW_ACTIVITY, false);
+        intent.putExtra(NotebookActivity.EXTRA_FROM_NOTE_VIEW_ACTIVITY, false);
         intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_ID, notebookId);
         intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_COLOR, notebookColor);
         startActivity(intent);

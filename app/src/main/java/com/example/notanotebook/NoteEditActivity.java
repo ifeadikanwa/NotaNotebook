@@ -75,7 +75,7 @@ public class NoteEditActivity extends AppCompatActivity {
 
         initialiseToolBar();
         Intent intent = getIntent();
-        fromNoteViewActivity = intent.getBooleanExtra(NotebookActivity.EXTRA_FROM_VIEW_ACTIVITY, false);
+        fromNoteViewActivity = intent.getBooleanExtra(NotebookActivity.EXTRA_FROM_NOTE_VIEW_ACTIVITY, false);
 
         //if intent is from View Activity we want to load previous content and title to screen
         if(fromNoteViewActivity){
@@ -217,7 +217,7 @@ public class NoteEditActivity extends AppCompatActivity {
         Intent intent = new Intent();
         intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_TITLE, title);
         intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT, content);
-        setResult(NoteViewActivity.NOTE_EDIT_REQUEST_CODE, intent);
+        setResult(RESULT_OK, intent);
         finish();
     }
 

@@ -9,9 +9,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ArchiveActivity"
+        <activity android:name=".PinLockScreenActivity"
+            android:theme="@style/PinLockScreenActivityTheme"
             android:screenOrientation="portrait"
-            android:parentActivityName=".NotebookActivity">
+            android:noHistory="true">
+
+        </activity>
+        <activity
+            android:name=".ArchiveActivity"
+            android:parentActivityName=".NotebookActivity"
+            android:screenOrientation="portrait">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
@@ -20,9 +27,9 @@
         </activity>
         <activity
             android:name=".NoteViewActivity"
+            android:parentActivityName=".NotebookContentActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Note_Edit_View_Activity_Theme"
-            android:parentActivityName=".NotebookContentActivity">
+            android:theme="@style/Note_Edit_View_Activity_Theme">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
@@ -31,8 +38,8 @@
         </activity>
         <activity
             android:name=".ChecklistEditActivity"
-            android:screenOrientation="portrait"
             android:parentActivityName=".NotebookContentActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/ChecklistEditActivityTheme">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
@@ -42,8 +49,8 @@
         </activity>
         <activity
             android:name=".NoteEditActivity"
-            android:screenOrientation="portrait"
             android:parentActivityName=".NotebookContentActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/Note_Edit_View_Activity_Theme">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
@@ -54,8 +61,8 @@
         <activity
             android:name=".NotebookContentActivity"
             android:label="Notebook Content"
-            android:screenOrientation="portrait"
-            android:parentActivityName=".NotebookActivity">
+            android:parentActivityName=".NotebookActivity"
+            android:screenOrientation="portrait">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
@@ -68,7 +75,8 @@
             android:theme="@style/ChecklistEditActivityTheme">
 
         </activity>
-        <activity android:name=".NotebookActivity"
+        <activity
+            android:name=".NotebookActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

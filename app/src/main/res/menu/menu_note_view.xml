@@ -17,6 +17,11 @@
         android:icon="@drawable/ic_not_pinned"
         app:showAsAction="always"/>
 
+    <item android:id="@+id/lock_note"
+        android:title="Lock Note"
+        android:icon="@drawable/ic_unlocked"
+        app:showAsAction="always"/>
+
     <item android:id="@+id/note_info"
         android:title="Note Info"
         android:icon="@drawable/ic_info"

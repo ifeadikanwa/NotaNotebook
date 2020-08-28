@@ -32,6 +32,7 @@ public class FirestoreRepository {
     public static final String TITLE_FIELD = "title";
     public static final String CHECKED_FIELD = "checked";
     public static final String PINNED_FIELD = "pinned";
+    public static final String LOCKED_FIELD = "locked";
     public static final String NOTE_CONTENT_FIELD = "noteContent";
     public static final String CHECKLIST_ITEM_FIELD = "item";
     public static final String CHECKLIST_DOC_ID_FIELD = "item_id";
@@ -53,7 +54,7 @@ public class FirestoreRepository {
         DocumentReference documentReference =  notebookRef.document();
 
         int contents = 0;
-        int color = Color.parseColor("#1E90FF");
+        int color = Color.parseColor("#BDB76B");
         String documentId = documentReference.getId();
 
         Notebook notebook = new Notebook(documentId, name, contents, color,  null, false);
@@ -113,7 +114,7 @@ public class FirestoreRepository {
         DocumentReference notebookContentDocRef = notebookRef.document(notebookId)
                 .collection(NOTEBOOK_CONTENT_COLLECTION).document();
 
-        NotebookContent content = new NotebookContent(notebookId,notebookContentDocRef.getId(), title, color, null,null,true, false);
+        NotebookContent content = new NotebookContent(notebookId,notebookContentDocRef.getId(), title, color, null,null,true, false,false);
         content.setNoteContent(noteContent);
 
         notebookContentDocRef.set(content)
@@ -140,7 +141,7 @@ public class FirestoreRepository {
 
         String docId = notebookContentDocRef.getId();
 
-        NotebookContent content = new NotebookContent(notebookId, docId, title, color, null,null,false, false);
+        NotebookContent content = new NotebookContent(notebookId, docId, title, color, null,null,false, false,false);
 
         notebookContentDocRef.set(content)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -148,7 +149,7 @@ public class FirestoreRepository {
                     public void onSuccess(Void aVoid) {
                         //done: increment content field in notebook document
                         increaseNotebookContentCount(notebookId);
-                        Log.i(TAG, "Todo Created");
+                        Log.i(TAG, "Checklist Created");
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -255,6 +256,13 @@ public class FirestoreRepository {
                 .collection(NOTEBOOK_CONTENT_COLLECTION)
                 .document(notebookContentId)
                 .update(PINNED_FIELD, pinned);
+    }
+
+    void updateLockedStatus(String notebookId, String notebookContentId, boolean locked){
+        notebookRef.document(notebookId)
+                .collection(NOTEBOOK_CONTENT_COLLECTION)
+                .document(notebookContentId)
+                .update(LOCKED_FIELD, locked);
     }
 
     void deleteChecklist(DocumentReference documentReference){
