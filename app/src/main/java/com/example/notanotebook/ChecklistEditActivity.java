@@ -4,10 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -159,12 +161,18 @@ public class ChecklistEditActivity extends AppCompatActivity implements Checklis
 
 
 
+    @SuppressLint("RestrictedApi")
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //get an instance of activity's menu and save to global variable
         activityMenu = menu;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_checklist_edit, menu);
+
+        if(menu instanceof MenuBuilder){
+            MenuBuilder m = (MenuBuilder) menu;
+            m.setOptionalIconsVisible(true);
+        }
 
         //set correct pin and lock icon on menu creation
         setPinnedIcon(pinned, menu);
@@ -186,7 +194,7 @@ public class ChecklistEditActivity extends AppCompatActivity implements Checklis
                 lockChecklistAction();
                 return true;
             case R.id.delete_checklist:
-                //todo: delete checklist
+                //done: delete checklist
                 showDeleteWarningDialog();
                 return true;
             case R.id.done_button:
@@ -265,9 +273,11 @@ public class ChecklistEditActivity extends AppCompatActivity implements Checklis
         MenuItem menuItem = menu.findItem(R.id.pin_checklist);
         if(pinned){
             menuItem.setIcon(R.drawable.ic_pinned);
+            menuItem.setTitle("Unpin checklist");
         }
         else{
             menuItem.setIcon(R.drawable.ic_not_pinned);
+            menuItem.setTitle("Pin checklist");
         }
     }
 
@@ -277,9 +287,11 @@ public class ChecklistEditActivity extends AppCompatActivity implements Checklis
         MenuItem menuItem = menu.findItem(R.id.lock_checklist);
         if(locked){
             menuItem.setIcon(R.drawable.ic_locked);
+            menuItem.setTitle("Unlock checklist");
         }
         else{
             menuItem.setIcon(R.drawable.ic_unlocked);
+            menuItem.setTitle("Lock checklist");
         }
     }
 

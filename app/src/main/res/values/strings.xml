@@ -2,13 +2,18 @@
     <string name="app_name">Nota Notebook</string>
     <string name="notebook">Notebook</string>
     <string name="space_notes"> notes</string>
-    <string name="edit_notebook">Edit Notebook</string>
+    <string name="edit_notebook">Edit notebook</string>
     <string name="edit_color">Edit Color</string>
     <string name="done">done</string>
     <string name="short_app_name">Nota</string>
     <string name="enter_item_text">Add task</string>
     <string name="archive">Archive</string>
-    <string name="pin_checklist">Pin Checklist</string>
-    <string name="edit_title">Edit Title</string>
+    <string name="pin_checklist">Pin checklist</string>
+    <string name="edit_title">Edit title</string>
     <string name="title">Title</string>
+    <string name="note_info">Note Info</string>
+    <string name="edit_note">Edit note</string>
+    <string name="delete_note">Delete note</string>
+    <string name="pin_note">Pin note</string>
+    <string name="lock_note">Lock note</string>
 </resources>

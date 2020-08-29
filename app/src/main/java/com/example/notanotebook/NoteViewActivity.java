@@ -2,14 +2,19 @@ package com.example.notanotebook;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.menu.MenuBuilder;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Html;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -44,6 +49,7 @@ public class NoteViewActivity extends AppCompatActivity {
     public static final int NOTE_EDIT_REQUEST_CODE = 111;
     public static final int LOCK_NOTE_REQUEST_CODE = 222;
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,7 +96,7 @@ public class NoteViewActivity extends AppCompatActivity {
 
         noteContentView.fromHtml(notebookContent);
 
-
+        testHtml();
     }
 
 
@@ -99,9 +105,11 @@ public class NoteViewActivity extends AppCompatActivity {
         MenuItem menuItem = menu.findItem(R.id.pin_note);
         if(pinned){
             menuItem.setIcon(R.drawable.ic_pinned);
+            menuItem.setTitle("Unpin note");
         }
         else{
             menuItem.setIcon(R.drawable.ic_not_pinned);
+            menuItem.setTitle("Pin note");
         }
     }
 
@@ -110,12 +118,15 @@ public class NoteViewActivity extends AppCompatActivity {
         MenuItem menuItem = menu.findItem(R.id.lock_note);
         if(locked){
             menuItem.setIcon(R.drawable.ic_locked);
+            menuItem.setTitle("Unlock note");
         }
         else{
             menuItem.setIcon(R.drawable.ic_unlocked);
+            menuItem.setTitle("Lock note");
         }
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //save the menu reference to global menu variable
@@ -124,6 +135,12 @@ public class NoteViewActivity extends AppCompatActivity {
         //inflate the activity's menu
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_note_view, menu);
+
+        //show icon for items in menu overflow
+        if(menu instanceof MenuBuilder){
+            MenuBuilder m = (MenuBuilder) menu;
+            m.setOptionalIconsVisible(true);
+        }
 
         //on creation of menu we want to set pin and locked icon to reflect current pin status
         setPinnedIcon(pinned, menu);
@@ -311,4 +328,15 @@ public class NoteViewActivity extends AppCompatActivity {
                 .show();
     }
 
+    private void testHtml(){
+        String html = notebookContent;
+        String plain = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            plain = Html.fromHtml(html, Html.FROM_HTML_SEPARATOR_LINE_BREAK_PARAGRAPH).toString();
+        }
+        else{
+            plain = Html.fromHtml(html).toString();
+        }
+        Log.i("HTML TO PLAIN TEXT", plain);
+    }
 }
