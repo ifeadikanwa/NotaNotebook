@@ -16,4 +16,6 @@
     <string name="delete_note">Delete note</string>
     <string name="pin_note">Pin note</string>
     <string name="lock_note">Lock note</string>
+    <string name="share">Share</string>
+    <string name="copy_note">Copy note</string>
 </resources>

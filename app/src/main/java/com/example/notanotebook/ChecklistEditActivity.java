@@ -169,6 +169,7 @@ public class ChecklistEditActivity extends AppCompatActivity implements Checklis
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_checklist_edit, menu);
 
+        //show icon for items in menu overflow
         if(menu instanceof MenuBuilder){
             MenuBuilder m = (MenuBuilder) menu;
             m.setOptionalIconsVisible(true);

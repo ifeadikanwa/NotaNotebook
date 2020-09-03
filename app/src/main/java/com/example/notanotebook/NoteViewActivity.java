@@ -6,8 +6,12 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.menu.MenuBuilder;
+import androidx.core.app.ShareCompat;
 
 import android.annotation.SuppressLint;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -19,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.chinalwb.are.AREditText;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -173,6 +178,14 @@ public class NoteViewActivity extends AppCompatActivity {
                 //done: lock or unlock note on click
                 lockNoteAction();
                 return true;
+            case R.id.share_note:
+                //todo: share note as text
+                shareNoteAction();
+                return true;
+            case R.id.copy_note:
+                //todo: copy all notes content to clipboard
+                copyNoteAction();
+                return true;
             case android.R.id.home:
                 //done: return to notebook content activity
                 finish();
@@ -180,6 +193,45 @@ public class NoteViewActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void copyNoteAction() {
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+
+        String noteTitle = "Title: " + notebookContentTitle + "\n";
+        String noteContent = Html.fromHtml(notebookContent).toString();
+
+        String note = noteTitle + noteContent;
+
+        // Creates a new text clip to put on the clipboard
+        ClipData clip = ClipData.newPlainText(notebookContentTitle, note);
+
+        // Set the clipboard's primary clip.
+        clipboard.setPrimaryClip(clip);
+
+        Toast.makeText(this, "Copied", Toast.LENGTH_SHORT).show();
+    }
+
+    private void shareNoteAction() {
+        String content = notebookContentTitle + "\n" + notebookContent;
+        String mimetype = "text/plain";
+
+//        Using Intent:
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(content).toString());
+        sendIntent.setType(mimetype);
+
+        Intent shareIntent = Intent.createChooser(sendIntent, null);
+        startActivity(shareIntent);
+
+//        Using ShareCompat:
+//        ShareCompat.IntentBuilder
+//                .from(this)
+//                .setType(mimetype)
+//                .setChooserTitle("Share this note:")
+//                .setHtmlText(content)
+//                .startChooser();
     }
 
     private void lockNoteAction() {
