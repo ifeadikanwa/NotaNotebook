@@ -10,24 +10,37 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class ChecklistEditActivity extends AppCompatActivity implements ChecklistCustomDialog.TitleDialogInterface, Checklist_Item_Dialog.TextDialogInterface {
+    public static final String TAG = ChecklistEditActivity.class.getSimpleName();
     private static final int LOCK_CHECKLIST_REQUEST_CODE = 333;
     private String notebookId;
     private String notebookContentId;
@@ -36,6 +49,7 @@ public class ChecklistEditActivity extends AppCompatActivity implements Checklis
     boolean locked;
     private Menu activityMenu;
     DocumentReference ChecklistDocRef;
+    CollectionReference ChecklistCollRef;
     FirestoreRepository firestoreRepository;
     RecyclerView recyclerView;
     ChecklistAdapter adapter;
@@ -90,6 +104,12 @@ public class ChecklistEditActivity extends AppCompatActivity implements Checklis
                 .document(notebookId)
                 .collection(FirestoreRepository.NOTEBOOK_CONTENT_COLLECTION)
                 .document(notebookContentId);
+
+        ChecklistCollRef = firestoreRepository.notebookRef
+                .document(notebookId)
+                .collection(FirestoreRepository.NOTEBOOK_CONTENT_COLLECTION)
+                .document(notebookContentId)
+                .collection(FirestoreRepository.CHECKLIST_CONTENT_COLLECTION);
 
         setupRecyclerView();
     }
@@ -148,7 +168,7 @@ public class ChecklistEditActivity extends AppCompatActivity implements Checklis
     }
 
 
-
+    //add checklist item on click of the attached view
     public void add_item(View view){
         String item_text = item_edit_text.getText().toString();
         String text_trimmed = item_text.trim();
@@ -198,6 +218,14 @@ public class ChecklistEditActivity extends AppCompatActivity implements Checklis
                 //done: delete checklist
                 showDeleteWarningDialog();
                 return true;
+            case R.id.checklist_info:
+                //done: show dates for checklist
+                getChecklistInfo();
+                return true;
+            case R.id.share_checklist:
+                //done: share checklist
+                shareChecklistAction();
+                return true;
             case R.id.done_button:
             case android.R.id.home:
                 finish();
@@ -206,6 +234,103 @@ public class ChecklistEditActivity extends AppCompatActivity implements Checklis
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    //get and share share checklist
+    private void shareChecklistAction(){
+
+        ChecklistCollRef.orderBy(FirestoreRepository.CHECKED_FIELD)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        StringBuilder checklistBuilder = new StringBuilder();
+                        checklistBuilder.append(notebookContentTitle).append("\n");
+                        if(task.getResult() != null && !(task.getResult().isEmpty())){
+                            for(QueryDocumentSnapshot documentSnapshot : task.getResult()){
+                                Checklist_Item item = documentSnapshot.toObject(Checklist_Item.class);
+                                if(item.isChecked()){
+                                    checklistBuilder.append("◼ ").append(item.getItem()).append("\n");
+                                }
+                                else{
+                                    checklistBuilder.append("◻ ").append(item.getItem()).append("\n");
+                                }
+                            }
+
+                            String checklist = checklistBuilder.toString();
+                            shareChecklistIntent(checklist);
+                        }
+                        else {
+                            Toast.makeText(ChecklistEditActivity.this, "Can't share empty checklist", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.i(TAG, e.toString());
+                    }
+                });
+    }
+
+    private void shareChecklistIntent(String checklist) {
+        if(checklist != null && checklist.trim().length() != 0){
+            Intent sendIntent = new Intent();
+            sendIntent.setAction(Intent.ACTION_SEND);
+            sendIntent.putExtra(Intent.EXTRA_TEXT, checklist);
+            sendIntent.setType("text/plain");
+
+            Intent shareIntent = Intent.createChooser(sendIntent, null);
+            startActivity(shareIntent);
+        }
+        else{
+            Toast.makeText(ChecklistEditActivity.this, "Can't share empty checklist", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    //get and display checklist info
+    private void getChecklistInfo(){
+
+        ChecklistDocRef.get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        NotebookContent note = task.getResult().toObject(NotebookContent.class);
+                        Date creation = note.getCreatedTime();
+                        Date modified = note.getLatestUpdateTime();
+
+                        //pattern is:  Tue, 13 May 2011 14:23
+                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm E, dd MMM yyyy");
+
+                        String creationStr = simpleDateFormat.format(creation);
+                        String modifiedStr = simpleDateFormat.format(modified);
+
+                        String dialogMessage = "Created: " + creationStr + "\n\nModified: " + modifiedStr;
+
+                        showChecklistInfoDialog(dialogMessage);
+                    }
+                });
+
+    }
+
+
+    //alert dialog for displaying checklist info
+    private void showChecklistInfoDialog(String dialogMessage){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Checklist Information")
+                .setMessage(dialogMessage)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if(dialogInterface != null){
+                            dialogInterface.dismiss();
+                        }
+                    }
+                })
+                .create()
+                .show();
+    }
+
 
     //lock or unlock checklist
     private void lockChecklistAction() {

@@ -18,4 +18,6 @@
     <string name="lock_note">Lock note</string>
     <string name="share">Share</string>
     <string name="copy_note">Copy note</string>
+    <string name="checklist_info">Checklist info</string>
+    <string name="lock_checklist">Lock Checklist</string>
 </resources>

@@ -1,5 +1,9 @@
 package com.example.notanotebook;
 
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,13 +29,22 @@ public class ChecklistAdapter extends FirestoreRecyclerAdapter<Checklist_Item, C
 
     @Override
     protected void onBindViewHolder(@NonNull ChecklistHolder holder, int position, @NonNull Checklist_Item model) {
+        holder.item_text.setText(model.getItem());
+
         if(model.isChecked()){
             holder.item_checkbox.setChecked(true);
-        }else{
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                holder.item_checkbox.setButtonTintList(ColorStateList.valueOf(Color.GRAY));
+            }
+
+            holder.item_text.setTextColor(Color.GRAY);
+        }
+        else{
             holder.item_checkbox.setChecked(false);
+
         }
 
-        holder.item_text.setText(model.getItem());
     }
 
 

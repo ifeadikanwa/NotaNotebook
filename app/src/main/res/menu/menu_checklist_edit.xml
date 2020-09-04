@@ -18,7 +18,17 @@
         app:showAsAction="never"/>
 
     <item android:id="@+id/lock_checklist"
-        android:title="Lock Checklist"
+        android:title="@string/lock_checklist"
         android:icon="@drawable/ic_unlocked"
         app:showAsAction="never"/>
+
+    <item android:id="@+id/checklist_info"
+        android:title="@string/checklist_info"
+        android:icon="@drawable/ic_info"
+        app:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/share_checklist"
+        android:title="@string/share"
+        android:icon="@drawable/ic_share"
+        app:showAsAction="ifRoom"/>
 </menu>

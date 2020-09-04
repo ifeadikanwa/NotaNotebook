@@ -101,7 +101,6 @@ public class NoteViewActivity extends AppCompatActivity {
 
         noteContentView.fromHtml(notebookContent);
 
-        testHtml();
     }
 
 
@@ -179,11 +178,11 @@ public class NoteViewActivity extends AppCompatActivity {
                 lockNoteAction();
                 return true;
             case R.id.share_note:
-                //todo: share note as text
+                //done: share note as text
                 shareNoteAction();
                 return true;
             case R.id.copy_note:
-                //todo: copy all notes content to clipboard
+                //done: copy all notes content to clipboard
                 copyNoteAction();
                 return true;
             case android.R.id.home:
@@ -380,15 +379,4 @@ public class NoteViewActivity extends AppCompatActivity {
                 .show();
     }
 
-    private void testHtml(){
-        String html = notebookContent;
-        String plain = null;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            plain = Html.fromHtml(html, Html.FROM_HTML_SEPARATOR_LINE_BREAK_PARAGRAPH).toString();
-        }
-        else{
-            plain = Html.fromHtml(html).toString();
-        }
-        Log.i("HTML TO PLAIN TEXT", plain);
-    }
 }
