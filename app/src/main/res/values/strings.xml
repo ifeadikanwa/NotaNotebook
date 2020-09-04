@@ -20,4 +20,5 @@
     <string name="copy_note">Copy note</string>
     <string name="checklist_info">Checklist info</string>
     <string name="lock_checklist">Lock Checklist</string>
+    <string name="delete_checklist">Delete Checklist</string>
 </resources>
