@@ -8,22 +8,22 @@
         app:showAsAction="always"/>
 
     <item android:id="@+id/delete_checklist"
-        android:title="@string/delete_checklist"
+        android:title="@string/delete"
         android:icon="@drawable/ic_delete"
         app:showAsAction="never"/>
 
     <item android:id="@+id/pin_checklist"
-        android:title="@string/pin_checklist"
+        android:title="@string/pin"
         android:icon="@drawable/ic_not_pinned"
         app:showAsAction="never"/>
 
     <item android:id="@+id/lock_checklist"
-        android:title="@string/lock_checklist"
+        android:title="@string/lock"
         android:icon="@drawable/ic_unlocked"
         app:showAsAction="never"/>
 
     <item android:id="@+id/checklist_info"
-        android:title="@string/checklist_info"
+        android:title="@string/info"
         android:icon="@drawable/ic_info"
         app:showAsAction="never"/>
 

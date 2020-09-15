@@ -3,32 +3,32 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item android:id="@+id/edit_note"
-        android:title="@string/edit_note"
+        android:title="@string/edit"
         android:icon="@drawable/ic_notebook_edit"
         app:showAsAction="ifRoom"/>
 
     <item android:id="@+id/copy_note"
-        android:title="@string/copy_note"
+        android:title="@string/copy"
         android:icon="@drawable/ic_outline_copy"
         app:showAsAction="ifRoom"/>
 
     <item android:id="@+id/delete_note"
-        android:title="@string/delete_note"
+        android:title="@string/delete"
         android:icon="@drawable/ic_delete"
         app:showAsAction="ifRoom"/>
 
     <item android:id="@+id/pin_note"
-        android:title="@string/pin_note"
+        android:title="@string/pin"
         android:icon="@drawable/ic_not_pinned"
         app:showAsAction="ifRoom"/>
 
     <item android:id="@+id/lock_note"
-        android:title="@string/lock_note"
+        android:title="@string/lock"
         android:icon="@drawable/ic_unlocked"
         app:showAsAction="ifRoom"/>
 
     <item android:id="@+id/note_info"
-        android:title="@string/note_info"
+        android:title="@string/info"
         android:icon="@drawable/ic_info"
         app:showAsAction="ifRoom"/>
 

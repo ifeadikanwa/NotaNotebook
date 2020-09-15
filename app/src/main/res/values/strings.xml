@@ -8,17 +8,13 @@
     <string name="short_app_name">Nota</string>
     <string name="enter_item_text">Add task</string>
     <string name="archive">Archive</string>
-    <string name="pin_checklist">Pin checklist</string>
+    <string name="pin">Pin</string>
     <string name="edit_title">Edit title</string>
     <string name="title">Title</string>
-    <string name="note_info">Note Info</string>
-    <string name="edit_note">Edit note</string>
-    <string name="delete_note">Delete note</string>
-    <string name="pin_note">Pin note</string>
-    <string name="lock_note">Lock note</string>
+    <string name="info">Info</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="lock">Lock</string>
     <string name="share">Share</string>
-    <string name="copy_note">Copy note</string>
-    <string name="checklist_info">Checklist info</string>
-    <string name="lock_checklist">Lock Checklist</string>
-    <string name="delete_checklist">Delete Checklist</string>
+    <string name="copy">Copy</string>
 </resources>
