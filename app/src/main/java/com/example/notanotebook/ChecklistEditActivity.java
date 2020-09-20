@@ -398,11 +398,11 @@ public class ChecklistEditActivity extends AppCompatActivity implements Checklis
         MenuItem menuItem = menu.findItem(R.id.pin_checklist);
         if(pinned){
             menuItem.setIcon(R.drawable.ic_pinned);
-            menuItem.setTitle("Unpin checklist");
+            menuItem.setTitle("Unpin");
         }
         else{
             menuItem.setIcon(R.drawable.ic_not_pinned);
-            menuItem.setTitle("Pin checklist");
+            menuItem.setTitle("Pin");
         }
     }
 
@@ -412,11 +412,11 @@ public class ChecklistEditActivity extends AppCompatActivity implements Checklis
         MenuItem menuItem = menu.findItem(R.id.lock_checklist);
         if(locked){
             menuItem.setIcon(R.drawable.ic_locked);
-            menuItem.setTitle("Unlock checklist");
+            menuItem.setTitle("Unlock");
         }
         else{
             menuItem.setIcon(R.drawable.ic_unlocked);
-            menuItem.setTitle("Lock checklist");
+            menuItem.setTitle("Lock");
         }
     }
 

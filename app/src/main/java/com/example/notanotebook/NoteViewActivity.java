@@ -109,11 +109,11 @@ public class NoteViewActivity extends AppCompatActivity {
         MenuItem menuItem = menu.findItem(R.id.pin_note);
         if(pinned){
             menuItem.setIcon(R.drawable.ic_pinned);
-            menuItem.setTitle("Unpin note");
+            menuItem.setTitle("Unpin");
         }
         else{
             menuItem.setIcon(R.drawable.ic_not_pinned);
-            menuItem.setTitle("Pin note");
+            menuItem.setTitle("Pin");
         }
     }
 
@@ -122,11 +122,11 @@ public class NoteViewActivity extends AppCompatActivity {
         MenuItem menuItem = menu.findItem(R.id.lock_note);
         if(locked){
             menuItem.setIcon(R.drawable.ic_locked);
-            menuItem.setTitle("Unlock note");
+            menuItem.setTitle("Unlock");
         }
         else{
             menuItem.setIcon(R.drawable.ic_unlocked);
-            menuItem.setTitle("Lock note");
+            menuItem.setTitle("Lock");
         }
     }
 

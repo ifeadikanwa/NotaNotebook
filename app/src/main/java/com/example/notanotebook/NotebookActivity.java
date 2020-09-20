@@ -3,6 +3,7 @@ package com.example.notanotebook;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -15,10 +16,23 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.algolia.search.saas.Client;
+import com.algolia.search.saas.Index;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class NotebookActivity extends AppCompatActivity implements NotebookCustomDialog.TitleDialogInterface {
     public static final String EXTRA_NOTEBOOK_ID = "com.example.notanotebook.EXTRA_NOTEBOOK_ID";
@@ -35,7 +49,9 @@ public class NotebookActivity extends AppCompatActivity implements NotebookCusto
     private RecyclerView recyclerView;
     private NotebookAdapter adapter;
     ImageButton archiveButton;
+    ImageButton searchButton;
     private FirestoreRepository firestoreRepository;
+    private Client client;
 
 
     @Override
@@ -51,14 +67,20 @@ public class NotebookActivity extends AppCompatActivity implements NotebookCusto
         archiveButton = findViewById(R.id.archive_button);
         archiveButton.setOnClickListener(archiveListener);
 
+        searchButton = findViewById(R.id.search_button);
+        searchButton.setOnClickListener(searchListener);
+
         notebookViewModel = new ViewModelProvider(this).get(NotebookViewModel.class);
         notebookViewModel.initialize();
 
         firestoreRepository = FirestoreRepository.getInstance();
-        
-        setUpRecyclerView();
-    }
 
+        client = new Client(BuildConfig.API_CLIENT_ID, BuildConfig.API_CLIENT_KEY);
+
+        setUpRecyclerView();
+
+//        addNotebookToIndex();
+    }
 
 
     private void setUpRecyclerView() {
@@ -135,6 +157,13 @@ public class NotebookActivity extends AppCompatActivity implements NotebookCusto
         }
     };
 
+    View.OnClickListener searchListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            startActivity(new Intent(NotebookActivity.this, NotebookSearchActivity.class));
+        }
+    };
+
     //OnClickListener for archive button, opens archive activity
     View.OnClickListener archiveListener = new View.OnClickListener() {
         @Override
@@ -180,6 +209,38 @@ public class NotebookActivity extends AppCompatActivity implements NotebookCusto
                 .create();
 
         builder.show();
+
+    }
+
+    private void addNotebookToIndex(){
+        Index index = client.getIndex("notebook_NAME");
+        List<JSONObject> array = new ArrayList<JSONObject>();
+
+        firestoreRepository.notebookRef
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.getResult() != null && !task.getResult().isEmpty()){
+                            Log.e("Index", "not null");
+                            for(QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()){
+                                Log.e("Index", "IN FOR LOOP");
+                                Notebook notebook = queryDocumentSnapshot.toObject(Notebook.class);
+                                try {
+                                    Log.e("Index", "IN TRY CATCH");
+                                    array.add( new JSONObject().put("NotebookId", notebook.getNotebookId()).put("Notebook Name", notebook.getName()).put("Color", notebook.getColor()).put("Contents", notebook.getContents()));
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+
+                            index.addObjectsAsync(new JSONArray(array), null);
+                        }
+                    }
+                });
+
+
 
     }
 }
