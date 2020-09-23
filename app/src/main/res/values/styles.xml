@@ -13,6 +13,36 @@
         <item name="colorAccent">@color/black</item>
     </style>
 
+    <style name="SignIn_Activity_Theme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@android:color/background_light</item>
+        <item name="colorPrimaryDark">@android:color/black</item>
+        <item name="colorAccent">@color/black</item>
+        <item name="android:windowBackground">@drawable/signin_bg1</item>
+    </style>
+
+    <style name="LoginTheme" parent="FirebaseUI">
+        <!-- Required for sign-in flow styling -->
+        <item name="colorPrimary">@color/white</item>
+        <item name="colorPrimaryDark">@color/black</item>
+        <item name="colorAccent">@color/gray</item>
+
+        <item name="colorControlNormal">@color/black</item>
+        <item name="colorControlActivated">@color/black</item>
+        <item name="colorControlHighlight">@color/gray</item>
+        <item name="colorButtonNormal">@color/white</item>
+
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textColorPrimary">@color/black</item>
+        <item name="android:textColorSecondary">@color/black</item>
+        <item name="android:textColorHint">@color/light_black</item>
+
+        <item name="android:windowBackground">@drawable/signin_bg1</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowAnimationStyle">@null</item>
+
+    </style>
+
     <style name="PinLockScreenActivityTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="colorPrimary">@android:color/background_light</item>
         <item name="colorPrimaryDark">@color/black</item>

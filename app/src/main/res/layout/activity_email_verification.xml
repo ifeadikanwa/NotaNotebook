@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".EmailVerificationActivity">
+
+    <TextView
+        android:id="@+id/different_email_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_gravity="center"
+
+        android:padding="15dp"
+        android:text="@string/use_a_different_email_address"
+        android:textColor="@color/light_black"
+        android:textSize="16sp" />
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_margin="5dp"
+        android:background="@color/white"
+        android:elevation="5dp"
+        android:padding="5dp"
+        app:cardCornerRadius="5dp"
+        app:cardUseCompatPadding="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="5dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:gravity="center"
+                android:text="@string/email_verification_required"
+                android:textColor="@color/black"
+                android:textSize="25sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:gravity="center"
+                android:fontFamily="monospace"
+                android:text="@string/an_email_has_been_sent_to_you"
+                android:textColor="@color/light_black"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/user_email_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:fontFamily="monospace"
+                android:textColor="@color/light_black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:gravity="center"
+                android:fontFamily="monospace"
+                android:text="@string/email_ver_instruction"
+                android:textColor="@color/light_black"
+                android:textSize="18sp" />
+
+            <Button
+                android:id="@+id/verify_done_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:fontFamily="monospace"
+                android:background="@color/light_gray"
+                android:text="@string/done" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerInParent="true"
+        android:orientation="vertical"
+        android:padding="15dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="@string/didn_t_receive_an_email"
+            android:textColor="@color/light_black"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/resend_verify_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:background="@color/light_gray"
+            android:padding="10dp"
+            android:text="@string/resend_verification_email" />
+
+    </LinearLayout>
+</RelativeLayout>

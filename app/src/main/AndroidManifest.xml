@@ -9,9 +9,26 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".NotebookSearchActivity"
+        <activity android:name=".EmailVerificationActivity"
+            android:theme="@style/SignIn_Activity_Theme"
+            android:screenOrientation="portrait">
+
+        </activity>
+        <activity
+            android:name=".SignInActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/SignIn_Activity_Theme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".NotebookSearchActivity"
             android:parentActivityName=".NotebookActivity"
             android:screenOrientation="portrait">
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -21,9 +38,7 @@
             android:name=".PinLockScreenActivity"
             android:noHistory="true"
             android:screenOrientation="portrait"
-            android:theme="@style/PinLockScreenActivityTheme">
-
-        </activity>
+            android:theme="@style/PinLockScreenActivityTheme"></activity>
         <activity
             android:name=".ArchiveActivity"
             android:parentActivityName=".NotebookActivity"
@@ -81,18 +96,10 @@
         <activity
             android:name=".TestActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/ChecklistEditActivityTheme">
-
-        </activity>
+            android:theme="@style/ChecklistEditActivityTheme"></activity>
         <activity
             android:name=".NotebookActivity"
-            android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>

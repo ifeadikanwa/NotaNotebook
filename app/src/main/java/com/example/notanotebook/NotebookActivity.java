@@ -75,10 +75,10 @@ public class NotebookActivity extends AppCompatActivity implements NotebookCusto
 
         firestoreRepository = FirestoreRepository.getInstance();
 
-        client = new Client(BuildConfig.API_CLIENT_ID, BuildConfig.API_CLIENT_KEY);
-
         setUpRecyclerView();
 
+        //TODO: this is for Algolia Search, *Setup at the end*
+//        client = new Client(BuildConfig.API_CLIENT_ID, BuildConfig.API_CLIENT_KEY);
 //        addNotebookToIndex();
     }
 
@@ -211,6 +211,9 @@ public class NotebookActivity extends AppCompatActivity implements NotebookCusto
         builder.show();
 
     }
+
+
+
 
     private void addNotebookToIndex(){
         Index index = client.getIndex("notebook_NAME");
