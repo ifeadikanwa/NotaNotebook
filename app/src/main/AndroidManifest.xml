@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.notanotebook">
+    package="com.ifyezedev.notanotebook">
 
     <application
         android:allowBackup="true"
@@ -9,13 +9,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".EmailVerificationActivity"
+        <activity android:name="com.ifyezedev.notanotebook.EmailVerificationActivity"
             android:theme="@style/SignIn_Activity_Theme"
             android:screenOrientation="portrait">
 
         </activity>
         <activity
-            android:name=".SignInActivity"
+            android:name="com.ifyezedev.notanotebook.SignInActivity"
             android:screenOrientation="portrait"
             android:theme="@style/SignIn_Activity_Theme">
             <intent-filter>
@@ -25,80 +25,80 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".NotebookSearchActivity"
-            android:parentActivityName=".NotebookActivity"
+            android:name="com.ifyezedev.notanotebook.NotebookSearchActivity"
+            android:parentActivityName="com.ifyezedev.notanotebook.NotebookActivity"
             android:screenOrientation="portrait">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".NotebookActivity" />
+                android:value="com.ifyezedev.notanotebook.NotebookActivity" />
         </activity>
         <activity
-            android:name=".PinLockScreenActivity"
+            android:name="com.ifyezedev.notanotebook.PinLockScreenActivity"
             android:noHistory="true"
             android:screenOrientation="portrait"
             android:theme="@style/PinLockScreenActivityTheme"></activity>
         <activity
-            android:name=".ArchiveActivity"
-            android:parentActivityName=".NotebookActivity"
+            android:name="com.ifyezedev.notanotebook.ArchiveActivity"
+            android:parentActivityName="com.ifyezedev.notanotebook.NotebookActivity"
             android:screenOrientation="portrait">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".NotebookActivity" />
+                android:value="com.ifyezedev.notanotebook.NotebookActivity" />
         </activity>
         <activity
-            android:name=".NoteViewActivity"
-            android:parentActivityName=".NotebookContentActivity"
+            android:name="com.ifyezedev.notanotebook.NoteViewActivity"
+            android:parentActivityName="com.ifyezedev.notanotebook.NotebookContentActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Note_Edit_View_Activity_Theme">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".NotebookContentActivity" />
+                android:value="com.ifyezedev.notanotebook.NotebookContentActivity" />
         </activity>
         <activity
-            android:name=".ChecklistEditActivity"
-            android:parentActivityName=".NotebookContentActivity"
+            android:name="com.ifyezedev.notanotebook.ChecklistEditActivity"
+            android:parentActivityName="com.ifyezedev.notanotebook.NotebookContentActivity"
             android:screenOrientation="portrait"
             android:theme="@style/ChecklistEditActivityTheme">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".NotebookContentActivity" />
+                android:value="com.ifyezedev.notanotebook.NotebookContentActivity" />
         </activity>
         <activity
-            android:name=".NoteEditActivity"
-            android:parentActivityName=".NotebookContentActivity"
+            android:name="com.ifyezedev.notanotebook.NoteEditActivity"
+            android:parentActivityName="com.ifyezedev.notanotebook.NotebookContentActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Note_Edit_View_Activity_Theme">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".NotebookContentActivity" />
+                android:value="com.ifyezedev.notanotebook.NotebookContentActivity" />
         </activity>
         <activity
-            android:name=".NotebookContentActivity"
+            android:name="com.ifyezedev.notanotebook.NotebookContentActivity"
             android:label="Notebook Content"
-            android:parentActivityName=".NotebookActivity"
+            android:parentActivityName="com.ifyezedev.notanotebook.NotebookActivity"
             android:screenOrientation="portrait">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".NotebookActivity" />
+                android:value="com.ifyezedev.notanotebook.NotebookActivity" />
         </activity>
         <activity
-            android:name=".TestActivity"
+            android:name="com.ifyezedev.notanotebook.TestActivity"
             android:screenOrientation="portrait"
             android:theme="@style/ChecklistEditActivityTheme"></activity>
         <activity
-            android:name=".NotebookActivity"
+            android:name="com.ifyezedev.notanotebook.NotebookActivity"
             android:screenOrientation="portrait"></activity>
     </application>
 

@@ -8,17 +8,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:670191766057:android:e03cf8e904cc61d7636a38",
+        "mobilesdk_app_id": "1:670191766057:android:af938398627c7f62636a38",
         "android_client_info": {
-          "package_name": "com.example.notanotebook"
+          "package_name": "com.ifyezedev.notanotebook"
         }
       },
       "oauth_client": [
         {
-          "client_id": "670191766057-oo8dbgcdodhma61aviarcv1la1a61sb8.apps.googleusercontent.com",
+          "client_id": "670191766057-nlpsogn5j5nv542gl0cv7tm34jl5f2q6.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.notanotebook",
+            "package_name": "com.ifyezedev.notanotebook",
             "certificate_hash": "de13fc9ab38e45bcf7221d256b33f294d4ffcee5"
           }
         },
