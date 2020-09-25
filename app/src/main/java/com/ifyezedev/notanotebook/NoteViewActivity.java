@@ -30,6 +30,8 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 
+import net.dankito.richtexteditor.android.RichTextEditor;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -45,7 +47,7 @@ public class NoteViewActivity extends AppCompatActivity {
     Menu activityMenu;
     TextInputEditText notebookTitleView;
     TextInputEditText noteTitleView;
-    AREditText noteContentView;
+    RichTextEditor noteContentView;
 
     FirestoreRepository firestoreRepository;
     DocumentReference noteDocRef;
@@ -69,6 +71,15 @@ public class NoteViewActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_note_view);
 
+        noteContentView = (RichTextEditor) findViewById(R.id.note_content_view);
+
+        //initialize necessary attributes of rich text editor
+        noteContentView.setEditorFontSize(18);
+        noteContentView.setPadding((4 * (int) getResources().getDisplayMetrics().density));
+        noteContentView.setEditorBackgroundColor(Color.WHITE);
+        noteContentView.setEditorFontColor(Color.BLACK);
+
+
         Intent intent = getIntent();
         notebookId = intent.getStringExtra(NotebookActivity.EXTRA_NOTEBOOK_ID);
         notebookName = intent.getStringExtra(NotebookActivity.EXTRA_NOTEBOOK_NAME);
@@ -81,7 +92,7 @@ public class NoteViewActivity extends AppCompatActivity {
         firestoreRepository = FirestoreRepository.getInstance();
         notebookTitleView = findViewById(R.id.notebook_titleView);
         noteTitleView = findViewById(R.id.note_titleView);
-        noteContentView = findViewById(R.id.note_content_view);
+
 
         noteDocRef = firestoreRepository.notebookRef
                 .document(notebookId)
@@ -89,15 +100,18 @@ public class NoteViewActivity extends AppCompatActivity {
                 .document(notebookContentId);
 
 
+
+
         //make the edit text views unresponsive to keyboard events
         noteTitleView.setKeyListener(null);
         notebookTitleView.setKeyListener(null);
-        noteContentView.setKeyListener(null);
+        noteContentView.setInputEnabled(false);
+
 
         notebookTitleView.setText(notebookName);
         noteTitleView.setText(notebookContentTitle);
 
-        noteContentView.fromHtml(notebookContent);
+        noteContentView.setHtml(notebookContent);
 
     }
 
@@ -275,8 +289,8 @@ public class NoteViewActivity extends AppCompatActivity {
 
                 noteTitleView.setText(notebookContentTitle);
 
-                noteContentView.setText("");
-                noteContentView.fromHtml(notebookContent);
+                noteContentView.setHtml("");
+                noteContentView.setHtml(notebookContent);
             }
         }
 

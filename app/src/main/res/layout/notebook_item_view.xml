@@ -26,12 +26,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Title"
+                android:fontFamily="serif"
                 android:textSize="30sp"
                 android:textColor="@color/black"/>
             <TextView
                 android:id="@+id/notesCount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="serif"
                 android:text="4 notes"
                 android:textSize="20sp"/>
         </LinearLayout>

@@ -37,11 +37,18 @@ import com.chinalwb.are.styles.toolitems.ARE_ToolItem_Underline;
 import com.chinalwb.are.styles.toolitems.IARE_ToolItem;
 import com.google.android.material.textfield.TextInputEditText;
 
+import net.dankito.richtexteditor.android.RichTextEditor;
+import net.dankito.richtexteditor.android.toolbar.AllCommandsEditorToolbar;
+import net.dankito.richtexteditor.callback.GetCurrentHtmlCallback;
+import net.dankito.richtexteditor.command.CommandName;
+
+import org.jetbrains.annotations.NotNull;
+
 public class NoteEditActivity extends AppCompatActivity {
     FirestoreRepository firestoreRepository;
     TextInputEditText noteTitleEdit;
-    AREditText noteContentEdit;
-    IARE_Toolbar noteToolBar;
+    RichTextEditor noteContentEdit;
+    AllCommandsEditorToolbar noteToolBar;
     String notebookId;
     int notebookColor;
     String notebookContentId;
@@ -66,13 +73,14 @@ public class NoteEditActivity extends AppCompatActivity {
         setContentView(R.layout.activity_note_edit);
 
         noteTitleEdit = findViewById(R.id.noteTitleEdit);
-        noteContentEdit = findViewById(R.id.are_edittext);
+        noteContentEdit = (RichTextEditor) findViewById(R.id.richtexteditor);
         firestoreRepository = FirestoreRepository.getInstance();
 
         //touchlistener for listening to changes
         noteTitleEdit.setOnTouchListener(touchListener);
         noteContentEdit.setOnTouchListener(touchListener);
 
+        initialiseEditor();
         initialiseToolBar();
         Intent intent = getIntent();
         fromNoteViewActivity = intent.getBooleanExtra(NotebookActivity.EXTRA_FROM_VIEW_ACTIVITY, false);
@@ -85,7 +93,7 @@ public class NoteEditActivity extends AppCompatActivity {
             notebookContent = intent.getStringExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT);
 
             noteTitleEdit.setText(notebookContentTitle);
-            noteContentEdit.fromHtml(notebookContent);
+            noteContentEdit.setHtml(notebookContent);
         }
         //if intent is not from View Activity we want to create a fresh, new note
         else {
@@ -94,49 +102,34 @@ public class NoteEditActivity extends AppCompatActivity {
         }
 
 
+        noteContentEdit.setPlaceholder("Content");
+        noteContentEdit.setEditorFontSize(18);
+        noteContentEdit.setPadding((4 * (int) getResources().getDisplayMetrics().density));
+
+//      some properties you also can set on editor
+        noteContentEdit.setEditorBackgroundColor(Color.WHITE);
+        noteContentEdit.setEditorFontColor(Color.BLACK);
+
+//      show keyboard right at start up
+        noteContentEdit.focusEditorAndShowKeyboardDelayed();
+
+    }
+
+    //initialize the rich text editor
+    private void initialiseEditor() {
+
     }
 
     private void initialiseToolBar() {
-        noteToolBar = this.findViewById(R.id.are_toolbar);
-        IARE_ToolItem bold = new ARE_ToolItem_Bold();
-        IARE_ToolItem italic = new ARE_ToolItem_Italic();
-        IARE_ToolItem underline = new ARE_ToolItem_Underline();
-        IARE_ToolItem strikethrough = new ARE_ToolItem_Strikethrough();
-        IARE_ToolItem highlighter = new ARE_ToolItem_BackgroundColor();
-        IARE_ToolItem fontColor = new ARE_ToolItem_FontColor();
-        IARE_ToolItem fontSize = new ARE_ToolItem_FontSize();
-        IARE_ToolItem quote = new ARE_ToolItem_Quote();
-        IARE_ToolItem listNumber = new ARE_ToolItem_ListNumber();
-        IARE_ToolItem listBullet = new ARE_ToolItem_ListBullet();
-        IARE_ToolItem divider = new ARE_ToolItem_Hr();
-        IARE_ToolItem link = new ARE_ToolItem_Link();
-        IARE_ToolItem subscript = new ARE_ToolItem_Subscript();
-        IARE_ToolItem superscript = new ARE_ToolItem_Superscript();
-        IARE_ToolItem left = new ARE_ToolItem_AlignmentLeft();
-        IARE_ToolItem center = new ARE_ToolItem_AlignmentCenter();
-        IARE_ToolItem right = new ARE_ToolItem_AlignmentRight();
-
-
-
-        noteToolBar.addToolbarItem(bold);
-        noteToolBar.addToolbarItem(italic);
-        noteToolBar.addToolbarItem(underline);
-        noteToolBar.addToolbarItem(strikethrough);
-        noteToolBar.addToolbarItem(highlighter);
-        noteToolBar.addToolbarItem(fontSize);
-        noteToolBar.addToolbarItem(fontColor);
-        noteToolBar.addToolbarItem(quote);
-        noteToolBar.addToolbarItem(listNumber);
-        noteToolBar.addToolbarItem(listBullet);
-        noteToolBar.addToolbarItem(divider);
-        noteToolBar.addToolbarItem(link);
-        noteToolBar.addToolbarItem(subscript);
-        noteToolBar.addToolbarItem(superscript);
-        noteToolBar.addToolbarItem(left);
-        noteToolBar.addToolbarItem(center);
-        noteToolBar.addToolbarItem(right);
-
-        noteContentEdit.setToolbar(noteToolBar);
+        noteToolBar = (AllCommandsEditorToolbar) this.findViewById(R.id.editorToolbar);
+        noteToolBar = (AllCommandsEditorToolbar) findViewById(R.id.editorToolbar);
+        noteToolBar.removeCommand(CommandName.INSERTIMAGE);
+        noteToolBar.removeCommand(CommandName.INSERTLINK);
+        noteToolBar.removeCommand(CommandName.FONTNAME);
+        noteToolBar.removeCommand(CommandName.FONTSIZE);
+        noteToolBar.removeCommand(CommandName.FORMATBLOCK);
+        noteToolBar.removeCommand(CommandName.BLOCKQUOTE);
+        noteToolBar.setEditor(noteContentEdit);
     }
 
     //if any view with this touch listener is touched we want to recognise that as a change being made
@@ -206,70 +199,91 @@ public class NoteEditActivity extends AppCompatActivity {
 
     //send results to calling activity and exit NoteEditActivity
     private void exitIntent(){
-        String title = noteTitleEdit.getText().toString();
-        String content = noteContentEdit.getHtml();
 
-        if(title.trim().length() == 0){
-            title = "untitled";
-        }
+        noteContentEdit.getCurrentHtmlAsync(new GetCurrentHtmlCallback() {
+            @Override
+            public void htmlRetrieved(@NotNull String s) {
+                String title = noteTitleEdit.getText().toString();
+                String content = s;
 
-        //we send the result to the calling activity
-        Intent intent = new Intent();
-        intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_TITLE, title);
-        intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT, content);
-        setResult(RESULT_OK, intent);
-        finish();
+                if(title.trim().length() == 0){
+                    title = "untitled";
+                }
+
+                //we send the result to the calling activity
+                Intent intent = new Intent();
+                intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT_TITLE, title);
+                intent.putExtra(NotebookActivity.EXTRA_NOTEBOOK_CONTENT, content);
+                setResult(RESULT_OK, intent);
+                finish();
+            }
+        });
     }
 
     //update note in firestore
     private void updateNote() {
-        String title = noteTitleEdit.getText().toString();
-        String content = noteContentEdit.getHtml();
 
-        if(title.trim().length() == 0){
-            title = "untitled";
-        }
+        noteContentEdit.getCurrentHtmlAsync(new GetCurrentHtmlCallback() {
+            @Override
+            public void htmlRetrieved(@NotNull String s) {
+                String title = noteTitleEdit.getText().toString();
+                String content = s;
 
-        //update note in firestore
-        firestoreRepository.updateNote(notebookId, notebookContentId, title, content);
+                if(title.trim().length() == 0){
+                    title = "untitled";
+                }
+
+                //update note in firestore
+                firestoreRepository.updateNote(notebookId, notebookContentId, title, content);
+            }
+        });
     }
 
 
     private void createNote() {
-        String title = noteTitleEdit.getText().toString();
-        String content = noteContentEdit.getHtml();
+        //get html in rich edit text and create a new note
+        noteContentEdit.getCurrentHtmlAsync(new GetCurrentHtmlCallback() {
+            @Override
+            public void htmlRetrieved(@NotNull String s) {
 
-        //if nothing is entered we don't want to save the note
-        if(title.trim().length() == 0 && (content.equalsIgnoreCase("<html><body></body></html>")
-                || content.equalsIgnoreCase("<html><body><br></body></html>")
-                || content.equalsIgnoreCase("<html><body><br><br></body></html>"))){
-            return;
-        }
+                String title = noteTitleEdit.getText().toString();
+                String content = s;
 
-        //if there is no title we want to give a default one
-        if(title.trim().length() == 0){
-            title = "untitled";
-        }
+                //if nothing is entered we don't want to save the note
+                if(title.trim().length() == 0 && content.equalsIgnoreCase("<p>\u200B</p>") ){
+                    return;
+                }
 
-        //create a new note in firestore
-        firestoreRepository.createNewNote(notebookId, notebookColor, title, content);
+                //if there is no title we want to give a default one
+                if(title.trim().length() == 0){
+                    title = "untitled";
+                }
+
+                //create a new note in firestore
+                firestoreRepository.createNewNote(notebookId, notebookColor, title, content);
+            }
+        });
     }
 
     //ask if they want to save update but save new notes no questions asked
     //done: on back pressed: create note or UPDATE NOTE
     @Override
     public void onBackPressed() {
-        if(fromNoteViewActivity){
-            if(changesMade){
-                openSaveWarningDialog();
+        // Important: Overwrite onBackPressed and pass it to toolbar.There's no other way that it can get informed of back button presses.
+        if(!noteToolBar.handlesBackButtonPress()){
+            if(fromNoteViewActivity){
+                if(changesMade){
+                    openSaveWarningDialog();
+                }
+                else {
+                    finish();
+                }
             }
-            else {
+            else{
+                createNote();
                 finish();
             }
         }
-        else{
-            createNote();
-            finish();
-        }
+
     }
 }
