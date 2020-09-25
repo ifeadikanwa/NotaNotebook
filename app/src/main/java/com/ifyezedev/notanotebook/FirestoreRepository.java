@@ -49,14 +49,14 @@ public class FirestoreRepository {
     }
 
     //done: add new notebook to database
-    void addNotebook(String name) {
+    void addNotebook(String userID, String name) {
         DocumentReference documentReference = notebookRef.document();
 
         int contents = 0;
         int color = Color.parseColor("#BDB76B");
         String documentId = documentReference.getId();
 
-        Notebook notebook = new Notebook(documentId, name, contents, color, null, false);
+        Notebook notebook = new Notebook(userID, documentId, name, contents, color, null, false);
 
         documentReference.set(notebook)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {

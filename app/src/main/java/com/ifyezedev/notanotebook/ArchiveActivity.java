@@ -12,6 +12,8 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.Query;
 
 public class ArchiveActivity extends AppCompatActivity {
@@ -19,6 +21,7 @@ public class ArchiveActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private NotebookAdapter adapter;
     private FirestoreRepository firestoreRepository;
+    private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +36,9 @@ public class ArchiveActivity extends AppCompatActivity {
     }
 
     private void setUpRecyclerView() {
-        Query query = firestoreRepository.notebookRef.whereEqualTo("archive", true)
+        Query query = firestoreRepository.notebookRef
+                .whereEqualTo("archive", true)
+                .whereEqualTo(FirestoreRepository.USER_ID_FIELD, user.getUid())
                 .orderBy(FirestoreRepository.DATE_FIELD, Query.Direction.DESCENDING);
 
         FirestoreRecyclerOptions<Notebook> options = new FirestoreRecyclerOptions.Builder<Notebook>()

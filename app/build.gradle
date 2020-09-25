@@ -63,5 +63,7 @@ dependencies {
 
     implementation 'com.algolia:algoliasearch-android:3.27.0'
 
+    implementation 'net.dankito.richtexteditor:richtexteditor-android:2.0.15'
+
 
 }

@@ -8,6 +8,7 @@ import java.util.Date;
 @IgnoreExtraProperties
 public class Notebook {
 
+    private String userID;
     private String name;
     private int contents;
     private String notebookId;
@@ -18,13 +19,18 @@ public class Notebook {
     public Notebook(){
     }
 
-    public Notebook(String notebookId, String name, int contents, int color, Date latestUpdateTime, boolean archive) {
+    public Notebook(String userID, String notebookId, String name, int contents, int color, Date latestUpdateTime, boolean archive) {
+        this.userID = userID;
         this.name = name;
         this.contents = contents;
         this.color = color;
         this.latestUpdateTime = latestUpdateTime;
         this.notebookId = notebookId;
         this.archive = archive;
+    }
+
+    public String getUserID() {
+        return userID;
     }
 
     public String getNotebookId() {

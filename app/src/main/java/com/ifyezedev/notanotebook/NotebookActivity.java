@@ -22,6 +22,8 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -51,6 +53,7 @@ public class NotebookActivity extends AppCompatActivity implements NotebookCusto
     ImageButton archiveButton;
     ImageButton searchButton;
     private FirestoreRepository firestoreRepository;
+    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private Client client;
 
 
@@ -84,7 +87,9 @@ public class NotebookActivity extends AppCompatActivity implements NotebookCusto
 
 
     private void setUpRecyclerView() {
-        Query query = firestoreRepository.notebookRef.whereEqualTo("archive", false)
+        Query query = firestoreRepository.notebookRef
+                .whereEqualTo("archive", false)
+                .whereEqualTo(FirestoreRepository.USER_ID_FIELD, user.getUid())
                 .orderBy(FirestoreRepository.DATE_FIELD, Query.Direction.DESCENDING);
 
         FirestoreRecyclerOptions<Notebook> options = new FirestoreRecyclerOptions.Builder<Notebook>()
@@ -177,7 +182,7 @@ public class NotebookActivity extends AppCompatActivity implements NotebookCusto
     //We collect data sent from the custom dialog and we use it to create a new notebook
     @Override
     public void createNotebook(String notebookTitle) {
-        firestoreRepository.addNotebook(notebookTitle);
+        firestoreRepository.addNotebook(user.getUid(), notebookTitle);
     }
 
     //AlertDialog for deleting or archiving notebook.
