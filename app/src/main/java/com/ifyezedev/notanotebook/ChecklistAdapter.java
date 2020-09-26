@@ -37,6 +37,10 @@ public class ChecklistAdapter extends FirestoreRecyclerAdapter<Checklist_Item, C
             holder.item_text.setTextColor(Color.GRAY);
         }
         else{
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                holder.item_checkbox.setButtonTintList(ColorStateList.valueOf(Color.BLACK));
+            }
+            holder.item_text.setTextColor(Color.BLACK);
             holder.item_checkbox.setChecked(false);
 
         }

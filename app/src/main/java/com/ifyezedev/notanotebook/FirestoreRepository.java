@@ -33,6 +33,7 @@ public class FirestoreRepository {
     public static final String NOTE_CONTENT_FIELD = "noteContent";
     public static final String CHECKLIST_ITEM_FIELD = "item";
     public static final String CHECKLIST_DOC_ID_FIELD = "item_id";
+    public static final String ENTRY_TIME_FIELD = "entryTime";
     public static final String USER_ID_FIELD = "userID";
     final CollectionReference notebookRef = db.collection("Notebooks");
     final CollectionReference userRef = db.collection("Users");
@@ -202,7 +203,7 @@ public class FirestoreRepository {
 
 
     void addChecklistItem(String notebookId, String notebookContentId, String item) {
-        Checklist_Item checklistItem = new Checklist_Item(item, false);
+        Checklist_Item checklistItem = new Checklist_Item(item, false, null);
 
         notebookRef.document(notebookId)
                 .collection(NOTEBOOK_CONTENT_COLLECTION)
@@ -235,12 +236,16 @@ public class FirestoreRepository {
     }
 
     void updateChecklistItemText(String notebookId, String notebookContentId, String checklistItemId, String newText) {
+        HashMap<String, Object> updates = new HashMap<>();
+        updates.put(CHECKLIST_ITEM_FIELD, newText);
+        updates.put(ENTRY_TIME_FIELD, FieldValue.serverTimestamp());
         notebookRef.document(notebookId)
                 .collection(NOTEBOOK_CONTENT_COLLECTION)
                 .document(notebookContentId)
                 .collection(CHECKLIST_CONTENT_COLLECTION)
                 .document(checklistItemId)
-                .update(CHECKLIST_ITEM_FIELD, newText);
+                .update(updates);
+
     }
 
     void updateNotebookContentTimestamp(String notebookId, String notebookContentId) {

@@ -83,14 +83,13 @@ public class ChecklistEditActivity extends AppCompatActivity implements Checklis
         firestoreRepository = FirestoreRepository.getInstance();
         add_item_button = findViewById(R.id.add_checklist_entry);
         item_edit_text = findViewById(R.id.checklist_edittext);
-        edit_title = findViewById(R.id.edit_checklist_title);
         titleView = findViewById(R.id.checklist_title_view);
 
         titleView.setKeyListener(null);
 
         titleView.setText(notebookContentTitle);
 
-        edit_title.setOnClickListener(new View.OnClickListener() {
+        titleView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //done: open custom dialog to edit title, update action bar and database
@@ -98,6 +97,7 @@ public class ChecklistEditActivity extends AppCompatActivity implements Checklis
                 checklistCustomDialog.show(getSupportFragmentManager(), "Edit Title");
             }
         });
+
 
         ChecklistDocRef = firestoreRepository.notebookRef
                 .document(notebookId)
@@ -119,7 +119,8 @@ public class ChecklistEditActivity extends AppCompatActivity implements Checklis
                 .collection(FirestoreRepository.NOTEBOOK_CONTENT_COLLECTION)
                 .document(notebookContentId)
                 .collection(FirestoreRepository.CHECKLIST_CONTENT_COLLECTION)
-                .orderBy(FirestoreRepository.CHECKED_FIELD);
+                .orderBy(FirestoreRepository.CHECKED_FIELD)
+                .orderBy(FirestoreRepository.ENTRY_TIME_FIELD, Query.Direction.DESCENDING);
 
         FirestoreRecyclerOptions<Checklist_Item> options = new FirestoreRecyclerOptions.Builder<Checklist_Item>()
                 .setQuery(query, Checklist_Item.class)
