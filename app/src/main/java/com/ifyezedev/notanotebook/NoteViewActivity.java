@@ -14,9 +14,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -35,13 +37,16 @@ import net.dankito.richtexteditor.callback.GetCurrentHtmlCallback;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class NoteViewActivity extends AppCompatActivity {
+import io.github.lucasfsc.html2pdf.Html2Pdf;
+
+public class NoteViewActivity extends AppCompatActivity implements Html2Pdf.OnCompleteConversion {
     String notebookId;
     String notebookName;
     String notebookContentId;
@@ -221,9 +226,9 @@ public class NoteViewActivity extends AppCompatActivity {
                 //done: share note as text
                 shareNoteAction();
                 return true;
-            case R.id.copy_note:
+            case R.id.export_note:
                 //done: copy all notes content to clipboard
-                copyNoteAction();
+                exportNoteAction();
                 return true;
             case android.R.id.home:
                 //done: return to notebook content activity
@@ -234,21 +239,30 @@ public class NoteViewActivity extends AppCompatActivity {
         }
     }
 
-    private void copyNoteAction() {
-        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 
-        String noteTitle = "Title: " + notebookContentTitle + "\n";
-        String noteContent = Html.fromHtml(notebookContent).toString();
+    //exports and saves note as pdf on device
+    private void exportNoteAction() {
+        File file = new File(this.getExternalFilesDir("pdf") + "/" + notebookContentTitle.trim());
+        Uri uri = Uri.fromFile(file);
+        Html2Pdf converter = new Html2Pdf.Companion.Builder()
+                .context(this)
+                .html(notebookContent)
+                .file(file)
+                .build();
 
-        String note = noteTitle + noteContent;
+        converter.convertToPdf(this);
+    }
 
-        // Creates a new text clip to put on the clipboard
-        ClipData clip = ClipData.newPlainText(notebookContentTitle, note);
+    @Override
+    public void onFailed() {
+        Log.i("PDF", "FAILED");
+        Toast.makeText(this, "EXPORT FAILED TRY AGAIN LATER", Toast.LENGTH_SHORT).show();
+    }
 
-        // Set the clipboard's primary clip.
-        clipboard.setPrimaryClip(clip);
-
-        Toast.makeText(this, "Copied", Toast.LENGTH_SHORT).show();
+    @Override
+    public void onSuccess() {
+        Log.i("PDF", "SUCCESS");
+        Toast.makeText(this, "PDF SAVED ON DEVICE", Toast.LENGTH_SHORT).show();
     }
 
     private void shareNoteAction() {
@@ -472,5 +486,6 @@ public class NoteViewActivity extends AppCompatActivity {
                 .create()
                 .show();
     }
+
 
 }

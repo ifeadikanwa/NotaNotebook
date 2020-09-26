@@ -65,5 +65,7 @@ dependencies {
 
     implementation 'net.dankito.richtexteditor:richtexteditor-android:2.0.15'
 
+    implementation 'com.github.LucasFsc:Html2Pdf:0.2-beta'
+
 
 }

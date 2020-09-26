@@ -7,9 +7,9 @@
         android:icon="@drawable/ic_notebook_edit"
         app:showAsAction="ifRoom"/>
 
-    <item android:id="@+id/copy_note"
-        android:title="@string/copy"
-        android:icon="@drawable/ic_outline_copy"
+    <item android:id="@+id/export_note"
+        android:title="export as pdf"
+        android:icon="@drawable/ic_pdf"
         app:showAsAction="ifRoom"/>
 
     <item android:id="@+id/delete_note"
