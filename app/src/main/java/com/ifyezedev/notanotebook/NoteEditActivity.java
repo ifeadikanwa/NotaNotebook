@@ -102,7 +102,7 @@ public class NoteEditActivity extends AppCompatActivity {
 
         //done: initialize editor attributes
         noteContentEdit.setPlaceholder("Content");
-        noteContentEdit.setEditorFontSize(16);
+        noteContentEdit.setEditorFontSize(17);
         noteContentEdit.setPadding((4 * (int) getResources().getDisplayMetrics().density));
 
 //      some properties you also can set on editor

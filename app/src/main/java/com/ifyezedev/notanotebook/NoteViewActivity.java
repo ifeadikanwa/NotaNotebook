@@ -87,7 +87,7 @@ public class NoteViewActivity extends AppCompatActivity implements Html2Pdf.OnCo
         noteContentView = (RichTextEditor) findViewById(R.id.note_content_view);
 
         //initialize necessary attributes of rich text editor
-        noteContentView.setEditorFontSize(16);
+        noteContentView.setEditorFontSize(17);
         noteContentView.setPadding((4 * (int) getResources().getDisplayMetrics().density));
         noteContentView.setEditorBackgroundColor(Color.WHITE);
         noteContentView.setEditorFontColor(Color.BLACK);
@@ -264,6 +264,7 @@ public class NoteViewActivity extends AppCompatActivity implements Html2Pdf.OnCo
         Log.i("PDF", "SUCCESS");
         Toast.makeText(this, "PDF SAVED ON DEVICE", Toast.LENGTH_SHORT).show();
     }
+
 
     private void shareNoteAction() {
         String content = notebookContentTitle + "\n" + notebookContent;
