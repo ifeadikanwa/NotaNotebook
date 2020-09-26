@@ -80,7 +80,6 @@ public class NoteEditActivity extends AppCompatActivity {
         noteTitleEdit.setOnTouchListener(touchListener);
         noteContentEdit.setOnTouchListener(touchListener);
 
-        initialiseEditor();
         initialiseToolBar();
         Intent intent = getIntent();
         fromNoteViewActivity = intent.getBooleanExtra(NotebookActivity.EXTRA_FROM_VIEW_ACTIVITY, false);
@@ -101,9 +100,9 @@ public class NoteEditActivity extends AppCompatActivity {
             notebookColor = Integer.parseInt(intent.getStringExtra(NotebookActivity.EXTRA_NOTEBOOK_COLOR));
         }
 
-
+        //done: initialize editor attributes
         noteContentEdit.setPlaceholder("Content");
-        noteContentEdit.setEditorFontSize(18);
+        noteContentEdit.setEditorFontSize(16);
         noteContentEdit.setPadding((4 * (int) getResources().getDisplayMetrics().density));
 
 //      some properties you also can set on editor
@@ -115,10 +114,6 @@ public class NoteEditActivity extends AppCompatActivity {
 
     }
 
-    //initialize the rich text editor
-    private void initialiseEditor() {
-
-    }
 
     private void initialiseToolBar() {
         noteToolBar = (AllCommandsEditorToolbar) this.findViewById(R.id.editorToolbar);

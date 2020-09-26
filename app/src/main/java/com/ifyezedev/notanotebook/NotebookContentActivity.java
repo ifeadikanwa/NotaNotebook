@@ -97,8 +97,6 @@ public class NotebookContentActivity extends AppCompatActivity implements Notebo
                 //turn snapshot to object, check isNote and then determine behaviour from there
                 NotebookContent notebookContent = documentSnapshot.toObject(NotebookContent.class);
                 if(notebookContent.isNote()){
-                    //update timestamp
-                    firestoreRepository.updateNotebookContentTimestamp(notebookId, notebookContent.getNotebookContentId());
 
                     Intent intent;
 

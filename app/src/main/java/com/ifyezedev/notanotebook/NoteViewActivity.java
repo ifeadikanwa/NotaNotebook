@@ -21,9 +21,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.chinalwb.are.AREditText;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
@@ -31,9 +31,15 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import net.dankito.richtexteditor.android.RichTextEditor;
+import net.dankito.richtexteditor.callback.GetCurrentHtmlCallback;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class NoteViewActivity extends AppCompatActivity {
     String notebookId;
@@ -48,11 +54,13 @@ public class NoteViewActivity extends AppCompatActivity {
     TextInputEditText notebookTitleView;
     TextInputEditText noteTitleView;
     RichTextEditor noteContentView;
+    TextView modifiedDateView;
 
     FirestoreRepository firestoreRepository;
     DocumentReference noteDocRef;
     public static final int NOTE_EDIT_REQUEST_CODE = 111;
     public static final int LOCK_NOTE_REQUEST_CODE = 222;
+
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -74,12 +82,13 @@ public class NoteViewActivity extends AppCompatActivity {
         noteContentView = (RichTextEditor) findViewById(R.id.note_content_view);
 
         //initialize necessary attributes of rich text editor
-        noteContentView.setEditorFontSize(18);
+        noteContentView.setEditorFontSize(16);
         noteContentView.setPadding((4 * (int) getResources().getDisplayMetrics().density));
         noteContentView.setEditorBackgroundColor(Color.WHITE);
         noteContentView.setEditorFontColor(Color.BLACK);
 
 
+        //unpack the intent
         Intent intent = getIntent();
         notebookId = intent.getStringExtra(NotebookActivity.EXTRA_NOTEBOOK_ID);
         notebookName = intent.getStringExtra(NotebookActivity.EXTRA_NOTEBOOK_NAME);
@@ -92,6 +101,7 @@ public class NoteViewActivity extends AppCompatActivity {
         firestoreRepository = FirestoreRepository.getInstance();
         notebookTitleView = findViewById(R.id.notebook_titleView);
         noteTitleView = findViewById(R.id.note_titleView);
+        modifiedDateView = findViewById(R.id.modifiedDateTxt);
 
 
         noteDocRef = firestoreRepository.notebookRef
@@ -99,8 +109,7 @@ public class NoteViewActivity extends AppCompatActivity {
                 .collection(FirestoreRepository.NOTEBOOK_CONTENT_COLLECTION)
                 .document(notebookContentId);
 
-
-
+        displayModifiedDate();
 
         //make the edit text views unresponsive to keyboard events
         noteTitleView.setKeyListener(null);
@@ -113,6 +122,25 @@ public class NoteViewActivity extends AppCompatActivity {
 
         noteContentView.setHtml(notebookContent);
 
+    }
+
+    //displays lst modified date on assigned textview
+    private void displayModifiedDate() {
+        noteDocRef.get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        NotebookContent notebookContent = task.getResult().toObject(NotebookContent.class);
+
+                        Date modifiedDate = notebookContent.getLatestUpdateTime();
+
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy");
+
+                        String modifiedStr ="Edited on " + dateFormat.format(modifiedDate);
+
+                        modifiedDateView.setText(modifiedStr);
+                    }
+                });
     }
 
 
@@ -308,22 +336,76 @@ public class NoteViewActivity extends AppCompatActivity {
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        NotebookContent note = task.getResult().toObject(NotebookContent.class);
-                        Date creation = note.getCreatedTime();
-                        Date modified = note.getLatestUpdateTime();
 
-                        //pattern is:  Tue, 13 May 2011 14:23
-                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm E, dd MMM yyyy");
+                        //get the text in the editor
+                        noteContentView.getCurrentHtmlAsync(new GetCurrentHtmlCallback() {
+                            @Override
+                            public void htmlRetrieved(@NotNull String s) {
 
-                        String creationStr = simpleDateFormat.format(creation);
-                        String modifiedStr = simpleDateFormat.format(modified);
+                                //get the word and char count
+                                int[] counts = getNumOfCharsAndWords(s);
 
-                        String dialogMessage = "Created: " + creationStr + "\n\nModified: " + modifiedStr;
+                                //get the dates
+                                NotebookContent note = task.getResult().toObject(NotebookContent.class);
+                                Date creation = note.getCreatedTime();
+                                Date modified = note.getLatestUpdateTime();
 
-                        showNoteInfoDialog(dialogMessage);
-                    }
+                                //pattern is:  Tue, 13 May 2011 14:23
+                                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm E, dd MMM yyyy");
+
+                                String creationStr = simpleDateFormat.format(creation);
+                                String modifiedStr = simpleDateFormat.format(modified);
+
+                                //build the string to display
+                                String dialogMessage = "Created: " + creationStr + "\n\nModified: " + modifiedStr
+                                        + "\n\nWord Count: " + counts[1] + "\n\nCharacters: " + counts[0];
+
+                                showNoteInfoDialog(dialogMessage);
+                            }
+
+                            });
+
+                        };
+
                 });
 
+    }
+
+    private int[] getNumOfCharsAndWords(String totalText)
+    {
+        String plain;
+
+        //convert html text to plain text
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            plain = Html.fromHtml(totalText, Html.FROM_HTML_SEPARATOR_LINE_BREAK_PARAGRAPH).toString();
+        }
+        else {
+            plain = Html.fromHtml(totalText).toString();
+        }
+
+        //arraylist to store matches
+        ArrayList<String> listOfWords = new ArrayList<>();
+        ArrayList<String> listOfChars = new ArrayList<>();
+
+        //pattern to match words and characters
+        Pattern wordSplitter = Pattern.compile("[A-Za-z]+");
+        Pattern charSplitter = Pattern.compile("[A-Za-z]");
+
+        //matching words
+        Matcher wordMatcher = wordSplitter.matcher(plain);
+
+        while (wordMatcher.find()) {
+            listOfWords.add(wordMatcher.group());
+        }
+
+        //matching characters
+        Matcher charMatcher = charSplitter.matcher(plain);
+
+        while (charMatcher.find()) {
+            listOfChars.add(charMatcher.group());
+        }
+
+        return new int[]{listOfChars.size(), listOfWords.size()};
     }
 
 

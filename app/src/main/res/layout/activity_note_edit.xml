@@ -11,9 +11,9 @@
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginRight="4dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginTop="2dp"
+        android:layout_marginRight="6dp"
+        android:layout_marginLeft="6dp"
+        android:layout_marginTop="4dp"
         android:layout_marginBottom="2dp"
         android:hint="Title">
 
@@ -27,12 +27,11 @@
             android:textStyle="bold" />
     </com.google.android.material.textfield.TextInputLayout>
 
-            <net.dankito.richtexteditor.android.RichTextEditor
-                android:id="@+id/richtexteditor"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="2"/>
-
+    <net.dankito.richtexteditor.android.RichTextEditor
+        android:id="@+id/richtexteditor"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"/>
 
     <net.dankito.richtexteditor.android.toolbar.AllCommandsEditorToolbar
         android:id="@+id/editorToolbar"
