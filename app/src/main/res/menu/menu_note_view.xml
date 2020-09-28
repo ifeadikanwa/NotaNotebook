@@ -7,11 +7,6 @@
         android:icon="@drawable/ic_notebook_edit"
         app:showAsAction="ifRoom"/>
 
-<!--    <item android:id="@+id/export_note"-->
-<!--        android:title="export as pdf"-->
-<!--        android:icon="@drawable/ic_pdf"-->
-<!--        app:showAsAction="ifRoom"/>-->
-
     <item android:id="@+id/delete_note"
         android:title="@string/delete"
         android:icon="@drawable/ic_delete"
