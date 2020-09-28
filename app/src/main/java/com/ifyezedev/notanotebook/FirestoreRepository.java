@@ -37,8 +37,8 @@ public class FirestoreRepository {
     public static final String USER_ID_FIELD = "userID";
     final CollectionReference notebookRef = db.collection("Notebooks");
     final CollectionReference userRef = db.collection("Users");
-    static final String NOTEBOOK_CONTENT_COLLECTION = "Notebook Content";
-    static final String CHECKLIST_CONTENT_COLLECTION = "Checklist Content";
+    static final String NOTEBOOK_CONTENT_COLLECTION = "NotebookContent";
+    static final String CHECKLIST_CONTENT_COLLECTION = "ChecklistContent";
 
 
     private FirestoreRepository() {

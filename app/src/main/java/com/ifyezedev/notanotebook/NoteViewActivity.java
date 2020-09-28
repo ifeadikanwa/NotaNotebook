@@ -46,7 +46,10 @@ import java.util.regex.Pattern;
 
 import io.github.lucasfsc.html2pdf.Html2Pdf;
 
-public class NoteViewActivity extends AppCompatActivity implements Html2Pdf.OnCompleteConversion {
+public class NoteViewActivity extends AppCompatActivity
+//        implements Html2Pdf.OnCompleteConversion
+{
+
     String notebookId;
     String notebookName;
     String notebookContentId;
@@ -226,10 +229,12 @@ public class NoteViewActivity extends AppCompatActivity implements Html2Pdf.OnCo
                 //done: share note as text
                 shareNoteAction();
                 return true;
-            case R.id.export_note:
-                //done: copy all notes content to clipboard
-                exportNoteAction();
-                return true;
+
+//            case R.id.export_note:
+//                //done: copy all notes content to clipboard
+//                exportNoteAction();
+//                return true;
+
             case android.R.id.home:
                 //done: return to notebook content activity
                 finish();
@@ -240,30 +245,32 @@ public class NoteViewActivity extends AppCompatActivity implements Html2Pdf.OnCo
     }
 
 
+
     //exports and saves note as pdf on device
-    private void exportNoteAction() {
-        File file = new File(this.getExternalFilesDir("pdf") + "/" + notebookContentTitle.trim());
-        Uri uri = Uri.fromFile(file);
-        Html2Pdf converter = new Html2Pdf.Companion.Builder()
-                .context(this)
-                .html(notebookContent)
-                .file(file)
-                .build();
+//    private void exportNoteAction() {
+//        File file = new File(this.getExternalFilesDir("pdf") + "/" + notebookContentTitle.trim());
+//        Uri uri = Uri.fromFile(file);
+//        Html2Pdf converter = new Html2Pdf.Companion.Builder()
+//                .context(this)
+//                .html(notebookContent)
+//                .file(file)
+//                .build();
+//
+//        converter.convertToPdf(this);
+//    }
 
-        converter.convertToPdf(this);
-    }
+//    @Override
+//    public void onFailed() {
+//        Log.i("PDF", "FAILED");
+//        Toast.makeText(this, "EXPORT FAILED TRY AGAIN LATER", Toast.LENGTH_SHORT).show();
+//    }
+//
+//    @Override
+//    public void onSuccess() {
+//        Log.i("PDF", "SUCCESS");
+//        Toast.makeText(this, "PDF SAVED ON DEVICE", Toast.LENGTH_SHORT).show();
+//    }
 
-    @Override
-    public void onFailed() {
-        Log.i("PDF", "FAILED");
-        Toast.makeText(this, "EXPORT FAILED TRY AGAIN LATER", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onSuccess() {
-        Log.i("PDF", "SUCCESS");
-        Toast.makeText(this, "PDF SAVED ON DEVICE", Toast.LENGTH_SHORT).show();
-    }
 
 
     private void shareNoteAction() {
