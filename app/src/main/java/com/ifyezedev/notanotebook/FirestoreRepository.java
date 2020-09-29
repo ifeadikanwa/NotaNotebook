@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -49,8 +50,8 @@ public class FirestoreRepository {
         return instance;
     }
 
-    //done: add new notebook to database
-    void addNotebook(String userID, String name) {
+    //done: add new notebook to database and scroll to start of recyclerview on success
+    void addNotebook(String userID, String name, LinearLayoutManager layoutManager) {
         DocumentReference documentReference = notebookRef.document();
 
         int contents = 0;
@@ -64,6 +65,9 @@ public class FirestoreRepository {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.i(TAG, "Notebook Created");
+
+                        //scroll to the atart of recyclerview
+                        layoutManager.scrollToPosition(0);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {

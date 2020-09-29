@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -160,6 +161,7 @@ public class NotebookActivity extends AppCompatActivity implements NotebookCusto
                     Toast.makeText(NotebookActivity.this, "Note Saved", Toast.LENGTH_SHORT).show();
                     finish();
                 }
+                //open notebook content activity and display notebook contents
                 else{
                     firestoreRepository.updateNotebookTimestamp(notebookId);
 
@@ -212,7 +214,11 @@ public class NotebookActivity extends AppCompatActivity implements NotebookCusto
     //We collect data sent from the custom dialog and we use it to create a new notebook
     @Override
     public void createNotebook(String notebookTitle) {
-        firestoreRepository.addNotebook(user.getUid(), notebookTitle);
+        //get the linearlayoutmanger of the recyclerview
+        LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+
+        firestoreRepository.addNotebook(user.getUid(), notebookTitle, layoutManager);
+
     }
 
     //AlertDialog for deleting or archiving notebook.
