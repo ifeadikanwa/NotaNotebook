@@ -33,15 +33,6 @@
             android:layout_gravity="bottom"
             android:background="@drawable/ic_archive" />
 
-
-        <ImageButton
-            android:id="@+id/search_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_marginStart="6dp"
-            android:background="@drawable/ic_search" />
-
         <ImageButton
             android:id="@+id/help_button"
             android:layout_width="wrap_content"
@@ -49,6 +40,14 @@
             android:layout_gravity="bottom"
             android:layout_marginStart="6dp"
             android:background="@drawable/ic_help_outline" />
+
+        <ImageButton
+            android:id="@+id/menu_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginStart="6dp"
+            android:background="@drawable/ic_user_menu" />
 
     </LinearLayout>
 
@@ -68,10 +67,10 @@
         android:layout_gravity="end"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="8dp"
-        android:clickable="true"
-        app:backgroundTint="@color/black"
         android:backgroundTint="@color/black"
+        android:clickable="true"
+        android:focusable="true"
         android:src="@drawable/ic_add_white"
-        android:focusable="true" />
+        app:backgroundTint="@color/black" />
 
 </LinearLayout>

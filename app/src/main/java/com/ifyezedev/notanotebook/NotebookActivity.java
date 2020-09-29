@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -37,23 +38,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NotebookActivity extends AppCompatActivity implements NotebookCustomDialog.TitleDialogInterface {
-    public static final String EXTRA_NOTEBOOK_ID = "com.example.notanotebook.EXTRA_NOTEBOOK_ID";
-    public static final String EXTRA_NOTEBOOK_NAME = "com.example.notanotebook.EXTRA_NOTEBOOK_NAME";
-    public static final String EXTRA_NOTEBOOK_COLOR = "com.example.notanotebook.EXTRA_NOTEBOOK_COLOR";
-    public static final String EXTRA_NOTEBOOK_CONTENT_ID = "com.example.notanotebook.EXTRA_NOTEBOOK_CONTENT_ID";
-    public static final String EXTRA_NOTEBOOK_CONTENT_TITLE = "com.example.notanotebook.EXTRA_NOTEBOOK_CONTENT_TITLE";
-    public static final String EXTRA_NOTEBOOK_CONTENT = "com.example.notanotebook.EXTRA_NOTEBOOK_CONTENT";
-    public static final String EXTRA_FROM_VIEW_ACTIVITY = "com.example.notanotebook.EXTRA_FROM_VIEW_ACTIVITY";
-    public static final String EXTRA_PINNED_STATUS = "com.example.notanotebook.EXTRA_PINNED_STATUS";
-    public static final String EXTRA_LOCKED_STATUS = "com.example.notanotebook.EXTRA_LOCKED_STATUS";
-    public static final String EXTRA_IS_NOTE = "com.example.notanotebook.EXTRA_IS_NOTE";
+    public static final String EXTRA_NOTEBOOK_ID = "com.ifyezedev.notanotebook.EXTRA_NOTEBOOK_ID";
+    public static final String EXTRA_NOTEBOOK_NAME = "com.ifyezedev.notanotebook.EXTRA_NOTEBOOK_NAME";
+    public static final String EXTRA_NOTEBOOK_COLOR = "com.ifyezedev.notanotebook.EXTRA_NOTEBOOK_COLOR";
+    public static final String EXTRA_NOTEBOOK_CONTENT_ID = "com.ifyezedev.notanotebook.EXTRA_NOTEBOOK_CONTENT_ID";
+    public static final String EXTRA_NOTEBOOK_CONTENT_TITLE = "com.ifyezedev.notanotebook.EXTRA_NOTEBOOK_CONTENT_TITLE";
+    public static final String EXTRA_NOTEBOOK_CONTENT = "com.ifyezedev.notanotebook.EXTRA_NOTEBOOK_CONTENT";
+    public static final String EXTRA_FROM_VIEW_ACTIVITY = "com.ifyezedev.notanotebook.EXTRA_FROM_VIEW_ACTIVITY";
+    public static final String EXTRA_FROM_SHARE_ACTIVITY = "com.ifyezedev.notanotebook.EXTRA_FROM_VIEW_ACTIVITY";
+    public static final String EXTRA_PINNED_STATUS = "com.ifyezedev.notanotebook.EXTRA_PINNED_STATUS";
+    public static final String EXTRA_LOCKED_STATUS = "com.ifyezedev.notanotebook.EXTRA_LOCKED_STATUS";
+    public static final String EXTRA_IS_NOTE = "com.ifyezedev.notanotebook.EXTRA_IS_NOTE";
     private NotebookViewModel notebookViewModel;
     private RecyclerView recyclerView;
     private NotebookAdapter adapter;
+    TextView labelText;
     ImageButton archiveButton;
-    ImageButton searchButton;
+    ImageButton helpButton;
+    ImageButton menuButton;
     private FirestoreRepository firestoreRepository;
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    String sharedTitle;
+    String sharedContent;
+    boolean share;
     private Client client;
 
 
@@ -67,16 +74,33 @@ public class NotebookActivity extends AppCompatActivity implements NotebookCusto
         FloatingActionButton add_notebook = findViewById(R.id.add_notebook);
         add_notebook.setOnClickListener(addNotebook);
 
+        labelText = findViewById(R.id.textView);
+
         archiveButton = findViewById(R.id.archive_button);
         archiveButton.setOnClickListener(archiveListener);
 
-        searchButton = findViewById(R.id.search_button);
-        searchButton.setOnClickListener(searchListener);
+        helpButton = findViewById(R.id.help_button);
+        menuButton = findViewById(R.id.menu_button);
 
         notebookViewModel = new ViewModelProvider(this).get(NotebookViewModel.class);
         notebookViewModel.initialize();
 
         firestoreRepository = FirestoreRepository.getInstance();
+
+        Intent intent = getIntent();
+        if(intent != null){
+            share = intent.getBooleanExtra(EXTRA_FROM_SHARE_ACTIVITY, false);
+            if(share){
+                sharedTitle = intent.getStringExtra(EXTRA_NOTEBOOK_CONTENT_TITLE);
+                sharedContent = intent.getStringExtra(EXTRA_NOTEBOOK_CONTENT);
+
+                labelText.setText(R.string.choose_notebook);
+                archiveButton.setVisibility(View.GONE);
+                helpButton.setVisibility(View.GONE);
+                menuButton.setVisibility(View.GONE);
+            }
+
+        }
 
         setUpRecyclerView();
 
@@ -128,13 +152,25 @@ public class NotebookActivity extends AppCompatActivity implements NotebookCusto
                 String notebookName = notebook.getName();
                 int notebookColor = notebook.getColor();
 
-                firestoreRepository.updateNotebookTimestamp(notebookId);
+                //if we are dealing with a share intent, we want to create a new note with
+                //data the user wants to save in the notebook they clicked.
+                if(share){
+                    firestoreRepository.createNewNote(notebookId, notebookColor, sharedTitle, sharedContent);
+                    firestoreRepository.updateNotebookTimestamp(notebookId);
+                    Toast.makeText(NotebookActivity.this, "Note Saved", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+                else{
+                    firestoreRepository.updateNotebookTimestamp(notebookId);
 
-                Intent intent = new Intent(NotebookActivity.this, NotebookContentActivity.class);
-                intent.putExtra(EXTRA_NOTEBOOK_NAME, notebookName);
-                intent.putExtra(EXTRA_NOTEBOOK_ID, notebookId);
-                intent.putExtra(EXTRA_NOTEBOOK_COLOR, String.valueOf(notebookColor));
-                startActivity(intent);
+                    Intent intent = new Intent(NotebookActivity.this, NotebookContentActivity.class);
+                    intent.putExtra(EXTRA_NOTEBOOK_NAME, notebookName);
+                    intent.putExtra(EXTRA_NOTEBOOK_ID, notebookId);
+                    intent.putExtra(EXTRA_NOTEBOOK_COLOR, String.valueOf(notebookColor));
+                    startActivity(intent);
+                }
+
+
             }
         });
 
@@ -162,12 +198,6 @@ public class NotebookActivity extends AppCompatActivity implements NotebookCusto
         }
     };
 
-    View.OnClickListener searchListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            startActivity(new Intent(NotebookActivity.this, NotebookSearchActivity.class));
-        }
-    };
 
     //OnClickListener for archive button, opens archive activity
     View.OnClickListener archiveListener = new View.OnClickListener() {

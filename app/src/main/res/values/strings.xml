@@ -23,4 +23,5 @@
     <string name="email_ver_instruction">Please follow the instructions in the verification email to finish creating your account</string>
     <string name="didn_t_receive_an_email">Didn\'t receive an email?</string>
     <string name="resend_verification_email">Resend verification email</string>
+    <string name="choose_notebook">Choose Notebook:</string>
 </resources>

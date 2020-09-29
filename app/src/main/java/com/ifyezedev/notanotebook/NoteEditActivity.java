@@ -98,6 +98,7 @@ public class NoteEditActivity extends AppCompatActivity {
         else {
             notebookId = intent.getStringExtra(NotebookActivity.EXTRA_NOTEBOOK_ID);
             notebookColor = Integer.parseInt(intent.getStringExtra(NotebookActivity.EXTRA_NOTEBOOK_COLOR));
+            noteContentEdit.setHtml("<p>Content</p>");
         }
 
         //done: initialize editor attributes
@@ -119,7 +120,7 @@ public class NoteEditActivity extends AppCompatActivity {
         noteToolBar = (AllCommandsEditorToolbar) this.findViewById(R.id.editorToolbar);
         noteToolBar = (AllCommandsEditorToolbar) findViewById(R.id.editorToolbar);
         noteToolBar.removeCommand(CommandName.INSERTIMAGE);
-        noteToolBar.removeCommand(CommandName.INSERTLINK);
+        noteToolBar.removeCommand(CommandName.INSERTLINK); 
         noteToolBar.removeCommand(CommandName.FONTNAME);
         noteToolBar.removeCommand(CommandName.FONTSIZE);
         noteToolBar.removeCommand(CommandName.FORMATBLOCK);

@@ -55,6 +55,7 @@ public class SignInActivity extends AppCompatActivity {
                             .createSignInIntentBuilder()
                             .setLogo(R.drawable.notabook_icon)
                             .setTheme(R.style.LoginTheme)
+                            .setIsSmartLockEnabled(true)
                             .setAvailableProviders(Arrays.asList(
                                     new AuthUI.IdpConfig.EmailBuilder().build(),
                                     new AuthUI.IdpConfig.GoogleBuilder().build()))

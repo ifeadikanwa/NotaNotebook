@@ -27,6 +27,7 @@
             android:id="@+id/notebook_titleView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textSize="19sp"
             android:fontFamily="serif"
             android:textColor="@color/black"
             android:textStyle="bold" />
@@ -41,6 +42,7 @@
             android:id="@+id/note_titleView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textSize="19sp"
             android:fontFamily="serif"
             android:textColor="@color/black"
             android:textStyle="bold" />
