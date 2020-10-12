@@ -88,6 +88,7 @@ public class NotebookAdapter extends FirestoreRecyclerAdapter<Notebook, Notebook
         return new NotebookHolder(v);
     }
 
+
     //delete notebook on swipe
     public void deleteNotebook(int position) {
         FirestoreRepository firestoreRepository = FirestoreRepository.getInstance();

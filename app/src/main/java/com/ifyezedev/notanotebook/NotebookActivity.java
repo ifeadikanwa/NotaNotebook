@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -75,6 +76,8 @@ public class NotebookActivity extends AppCompatActivity implements NotebookCusto
         FloatingActionButton add_notebook = findViewById(R.id.add_notebook);
         add_notebook.setOnClickListener(addNotebook);
 
+        recyclerView  = findViewById(R.id.notebook_recyclerview);
+
         labelText = findViewById(R.id.textView);
 
         archiveButton = findViewById(R.id.archive_button);
@@ -117,13 +120,13 @@ public class NotebookActivity extends AppCompatActivity implements NotebookCusto
                 .whereEqualTo(FirestoreRepository.USER_ID_FIELD, user.getUid())
                 .orderBy(FirestoreRepository.DATE_FIELD, Query.Direction.DESCENDING);
 
+
         FirestoreRecyclerOptions<Notebook> options = new FirestoreRecyclerOptions.Builder<Notebook>()
                 .setQuery(query, Notebook.class)
                 .build();
 
         adapter = new NotebookAdapter(options);
 
-        recyclerView  = findViewById(R.id.notebook_recyclerview);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         LinearLayoutManager HorizontalLayout = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
@@ -177,6 +180,7 @@ public class NotebookActivity extends AppCompatActivity implements NotebookCusto
         });
 
     }
+
 
     @Override
     protected void onStart() {
