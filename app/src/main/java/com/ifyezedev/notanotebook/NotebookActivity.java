@@ -48,6 +48,7 @@ public class NotebookActivity extends AppCompatActivity implements NotebookCusto
     public static final String EXTRA_NOTEBOOK_CONTENT = "com.ifyezedev.notanotebook.EXTRA_NOTEBOOK_CONTENT";
     public static final String EXTRA_FROM_VIEW_ACTIVITY = "com.ifyezedev.notanotebook.EXTRA_FROM_VIEW_ACTIVITY";
     public static final String EXTRA_FROM_SHARE_ACTIVITY = "com.ifyezedev.notanotebook.EXTRA_FROM_VIEW_ACTIVITY";
+    public static final String EXTRA_RESET_PIN = "com.ifyezedev.notanotebook.EXTRA_RESET_PIN";
     public static final String EXTRA_PINNED_STATUS = "com.ifyezedev.notanotebook.EXTRA_PINNED_STATUS";
     public static final String EXTRA_LOCKED_STATUS = "com.ifyezedev.notanotebook.EXTRA_LOCKED_STATUS";
     public static final String EXTRA_IS_NOTE = "com.ifyezedev.notanotebook.EXTRA_IS_NOTE";
@@ -105,6 +106,15 @@ public class NotebookActivity extends AppCompatActivity implements NotebookCusto
             }
 
         }
+
+        //on click of menu button show bottom sheet
+        menuButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                BottomSheetDialog bottomSheetDialog = new BottomSheetDialog();
+                bottomSheetDialog.show(getSupportFragmentManager(), "Menu Bottom Sheet");
+            }
+        });
 
         setUpRecyclerView();
 

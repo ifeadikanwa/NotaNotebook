@@ -10,9 +10,11 @@ import android.widget.Toast;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.FirebaseUserMetadata;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.Arrays;
 
@@ -36,16 +38,32 @@ public class SignInActivity extends AppCompatActivity {
         FirebaseUser user = auth.getCurrentUser();
         if (user != null) {
             // already signed in
-            //check email verification status and act accordingly
+            //check email verification status, if the security question is set and act accordingly
 
-            if (user.isEmailVerified()) {
-                //todo: go to notebookActivity
-                startActivity(new Intent(SignInActivity.this, NotebookActivity.class));
-            } else {
-                //todo: go to verification activity
-                startActivity(new Intent(SignInActivity.this, EmailVerificationActivity.class));
-            }
-            finish();
+            //get the current users document from the users collection
+            firestoreRepository.userRef
+                    .document(user.getUid())
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            Users currentUser = documentSnapshot.toObject(Users.class);
+                            boolean securitySet = currentUser.isSecuritySet();
+
+                            if (user.isEmailVerified() & securitySet) {
+                                //todo: go to notebookActivity
+                                startActivity(new Intent(SignInActivity.this, NotebookActivity.class));
+                            }
+                            else if(user.isEmailVerified() & !securitySet){
+                                //todo: go to SecurityQuestionActivity to set security question
+                                startActivity(new Intent(SignInActivity.this, SecurityQuestionActivity.class));
+                            }
+                            else {
+                                //todo: go to verification activity
+                                startActivity(new Intent(SignInActivity.this, EmailVerificationActivity.class));
+                            }
+                        }
+                    });
 
         } else {
             // not signed in
@@ -87,19 +105,23 @@ public class SignInActivity extends AppCompatActivity {
                 // sign in successful
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-                //check if its a new user and them to the database
+                //check if its a new user and them to the database and set security check to false
                 FirebaseUserMetadata metadata = user.getMetadata();
                 if (metadata.getCreationTimestamp() == metadata.getLastSignInTimestamp()) {
-                    firestoreRepository.addUser(user.getUid());
+                    firestoreRepository.addUser(user.getUid(), false);
+                }
+                else{
+                    //if the user is not new we just want to update the security to false
+                    firestoreRepository.updateSecurityField(user.getUid(), false);
                 }
 
                 // Todo: if account isn't verified, take them to verification activity
                 if (user != null) {
                     if (user.isEmailVerified()) {
-                        //todo: go to notebookActivity
-                        startActivity(new Intent(SignInActivity.this, NotebookActivity.class));
+                        //todo: if account is verified go to Security question activity to set security
+                        startActivity(new Intent(SignInActivity.this, SecurityQuestionActivity.class));
                     } else {
-                        //todo: go to verification activity
+                        //todo: if email not verified go to verification activity
                         startActivity(new Intent(SignInActivity.this, EmailVerificationActivity.class));
                     }
                     finish();

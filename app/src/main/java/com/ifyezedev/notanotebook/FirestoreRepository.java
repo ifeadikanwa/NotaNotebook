@@ -16,6 +16,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.WriteBatch;
 
 import java.util.HashMap;
 
@@ -36,6 +37,7 @@ public class FirestoreRepository {
     public static final String CHECKLIST_DOC_ID_FIELD = "item_id";
     public static final String ENTRY_TIME_FIELD = "entryTime";
     public static final String USER_ID_FIELD = "userID";
+    public static final String USER_SECURITY_FIELD = "securitySet";
     final CollectionReference notebookRef = db.collection("Notebooks");
     final CollectionReference userRef = db.collection("Users");
     static final String NOTEBOOK_CONTENT_COLLECTION = "NotebookContent";
@@ -168,7 +170,12 @@ public class FirestoreRepository {
 
     //update color of notebook and notebook content
     void updateColor(String notebookId, final int color) {
-        notebookRef.document(notebookId).update(COLOR_FIELD, color);
+        //Using batch to update color, so if one fails they all fail
+        WriteBatch batch = db.batch();
+
+        //first update the notebook color
+        batch.update(notebookRef.document(notebookId), COLOR_FIELD, color);
+//        notebookRef.document(notebookId).update(COLOR_FIELD, color);
 
         notebookRef.document(notebookId)
                 .collection(NOTEBOOK_CONTENT_COLLECTION).get()
@@ -177,10 +184,20 @@ public class FirestoreRepository {
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                         for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                             if (documentSnapshot.exists()) {
-                                documentSnapshot.getReference().update(COLOR_FIELD, color);
+                                //next update every notebook content
+                                batch.update(documentSnapshot.getReference(), COLOR_FIELD, color);
+//                                documentSnapshot.getReference().update(COLOR_FIELD, color);
                             }
 
                         }
+
+                        //finally commit the batch when everything has been added to the batch
+                        batch.commit().addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.e(TAG, e.toString());
+                            }
+                        });
                     }
                 });
 
@@ -329,20 +346,28 @@ public class FirestoreRepository {
                 });
     }
 
-    void addUser(String userID) {
-        Users user = new Users(userID);
-        userRef.add(user)
-                .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+    void addUser(String userID, boolean isSecuritySet) {
+        Log.i(TAG, "userID: " + userID);
+
+        Users user = new Users(userID, isSecuritySet);
+        userRef.document(userID)
+                .set(user)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
-                    public void onComplete(@NonNull Task<DocumentReference> task) {
-                        Log.i(TAG, "new user added");
+                    public void onSuccess(Void aVoid) {
+                        Log.i(TAG, "New User added");
                     }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.e(TAG, e.toString());
-            }
-        });
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG, e.toString());
+                    }
+                });
+    }
+
+    void updateSecurityField(String userID, boolean isSecuritySet){
+        userRef.document(userID).update(USER_SECURITY_FIELD, isSecuritySet);
     }
 
 }

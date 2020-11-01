@@ -96,7 +96,7 @@ public class EmailVerificationActivity extends AppCompatActivity {
                     if (user.isEmailVerified()) {
                         //go to notebook activity
                         Toast.makeText(EmailVerificationActivity.this, "Email verified", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(EmailVerificationActivity.this, NotebookActivity.class));
+                        startActivity(new Intent(EmailVerificationActivity.this, SecurityQuestionActivity.class));
                         finish();
                     } else {
                         //email has not been verified, notify user and stay here
